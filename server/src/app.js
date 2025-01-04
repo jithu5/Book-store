@@ -31,7 +31,7 @@ app.use((err, req, res, next) => {
     const errors = err.errors || [];
     const success = err.success || false;
     res.status(statusCode).json({ message: errMsg, errors: errors,success: success });
-});
+}); 
 
 
 export default app;

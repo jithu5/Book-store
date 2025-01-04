@@ -4,8 +4,15 @@ import React from "react";
 import { FiShoppingCart } from "react-icons/fi";
 import { getImgUrl } from "../../utils/getimgUrl";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../../redux/features/cart/cartSlice";
 
 function BookCard({ book }) {
+  const dispatch = useDispatch();
+
+  const handleAddToCart = (product) => {
+    dispatch(addToCart(product));
+  }
   return (
     <>
       <div className=" rounded-lg transition-shadow duration-300">
@@ -37,7 +44,8 @@ function BookCard({ book }) {
                 ${book?.oldPrice}
               </span>
             </p>
-            <button className="btn-primary  flex items-center justify-center">
+            <button 
+            onClick = {()=>handleAddToCart(book)} className="btn-primary  flex items-center justify-center">
               <FiShoppingCart className="text-lg" />
               <span className="text-md inline-block">Add to Cart</span>
             </button>
