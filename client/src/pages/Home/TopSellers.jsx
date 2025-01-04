@@ -6,7 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
-import "swiper/css/navigation"
+import "swiper/css/navigation";
 
 
 // import required modules
@@ -65,6 +65,7 @@ function TopSellers() {
         <Swiper
           slidesPerView={1}
           spaceBetween={30}
+          navigation
           breakpoints={{
             640: {
               slidesPerView: 1,

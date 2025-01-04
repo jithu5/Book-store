@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { RiMenu2Line } from "react-icons/ri";
@@ -20,7 +20,8 @@ function NavBar() {
 
   const [isDropDown, setIsDropDown] = useState(false)
 
-  const currentUser = true;
+  const currentUser = false;
+  
   return (
     <>
       <header className="max-w-screen-2xl mx-auto px-6 sm:px-8 md:px-14 py-3">
@@ -67,7 +68,9 @@ function NavBar() {
                   )}
                 </>
               ) : (
-                <HiOutlineUser className="text-xl md:text-2xl" />
+                <Link to="/login">
+                  <HiOutlineUser className="text-xl md:text-2xl" />
+                </Link>
               )}
             </div>
             <button className="hidden sm:inline-block">

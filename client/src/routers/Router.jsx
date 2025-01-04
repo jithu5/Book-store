@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
-import {Home} from "../pages/index"
+import { Home, Login, Register } from "../pages/index";
 
 // Define your routes here
 const router = createBrowserRouter([
@@ -10,18 +10,22 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        index:true,
-        element: <Home/>,
-      },
-      {
-        path: "team",
-        element: <h2>Team</h2>,
+        index: true,
+        element: <Home />,
       },
       {
         path: "contact",
         element: <h2>Contact</h2>,
       },
     ],
+  },
+  {
+    path: "login",
+    element: <Login />,
+  },
+  {
+    path: "register",
+    element: <Register />,
   },
 ]);
 export default router;
