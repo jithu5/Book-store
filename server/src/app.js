@@ -8,6 +8,9 @@ import path, {dirname} from "path"
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// Import routes
+import bookRoute from './routes/book.route.js';
+
 const app = express();
 
 
@@ -22,6 +25,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
+
+// Routes
+app.use('/api/books', bookRoute);
+
 
 
 // Error handling middleware

@@ -122,7 +122,7 @@
     {
         "_id": 13,
         "title": "The Picture of Dorian Gray",
-        "description": "Oscar Wilde’s only novel is the dreamlike story of a young man who sells his soul for eternal youth and beauty.",
+        "description": "Oscar Wilde's only novel is the dreamlike story of a young man who sells his soul for eternal youth and beauty.",
         "category": "horror",
         "trending": true,
         "coverImage": "book-13.png",
@@ -161,7 +161,7 @@
     },
     {
         "_id": 17,
-        "title": "Alice’s Adventures in Wonderland",
+        "title": "Alice's Adventures in Wonderland",
         "description": "When Alice sees a white rabbit take a watch out of its waistcoat pocket she decides to follow it, and a sequence of most unusual events is set in motion. This mini book contains the entire topsy-turvy stories of Alice's Adventures in Wonderland",
         "category": "adventure",
         "trending": true,
@@ -192,7 +192,7 @@
     {
         "_id": 20,
         "title": "Four Thousand Weeks",
-        "description": "Nobody needs to be told there isn’t enough time. We’re obsessed with our lengthening to-do lists, overfilled inboxes, work-life balance, and ceaseless battle against distraction; we’re deluged with advice on becoming more productive and efficient",
+        "description": "Nobody needs to be told there isn't enough time. We're obsessed with our lengthening to-do lists, overfilled inboxes, work-life balance, and ceaseless battle against distraction; we're deluged with advice on becoming more productive and efficient",
         "category": "business",
         "trending": false,
         "coverImage": "book-20.png",
