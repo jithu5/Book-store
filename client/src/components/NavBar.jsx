@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { RiMenu2Line } from "react-icons/ri";
@@ -9,22 +9,26 @@ import { HiOutlineShoppingCart } from "react-icons/hi2";
 
 import avatar from "../assets/avatar.png";
 import { useSelector } from "react-redux";
+import { AuthContext } from "../Context/AuthContext";
 
-const navigation =[
-  {name:"Dashboard",href:"/dashboard"},
-  {name:"Orders",href:"/order"},
-  {name:"Cart Page",href:"/cart"},
-  {name:"Checkout",href:"/checkout"},
-]
+const navigation = [
+  { name: "Dashboard", href: "/dashboard" },
+  { name: "Orders", href: "/order" },
+  { name: "Cart Page", href: "/cart" },
+  { name: "Checkout", href: "/checkout" },
+];
 
 function NavBar() {
+  const [isDropDown, setIsDropDown] = useState(false);
 
-  const [isDropDown, setIsDropDown] = useState(false)
+  const { currentUser, signOutUser } = useContext(AuthContext);
+  console.log(currentUser)
 
-  const currentUser = false;
-
+  const handleSignout = () => {
+    signOutUser();
+  };
   const cartItems = useSelector((state) => state.cart.cartitems);
-  
+
   return (
     <>
       <header className="max-w-screen-2xl mx-auto px-6 sm:px-8 md:px-14 py-3">
@@ -52,7 +56,10 @@ function NavBar() {
             <div className="relative">
               {currentUser ? (
                 <>
-                  <button onClick={()=>setIsDropDown(prev=>!prev)} className="relative">
+                  <button
+                    onClick={() => setIsDropDown((prev) => !prev)}
+                    className="relative"
+                  >
                     <img src={avatar} className="w-6 md:w-8" alt="" />
                   </button>
                   {/* show dropdown */}
@@ -61,11 +68,24 @@ function NavBar() {
                       <ul>
                         {navigation.map((nav, index) => (
                           <li key={index}>
-                            <Link to={nav.href} onClick={()=>setIsDropDown(false)} className="text-sm md:text-lg font-medium text-stone-500 hover:text-stone-950">
+                            <Link
+                              to={nav.href}
+                              onClick={() => setIsDropDown(false)}
+                              className="text-sm md:text-lg font-medium text-stone-500 hover:text-stone-950"
+                            >
                               {nav.name}
                             </Link>
                           </li>
                         ))}
+                        <li>
+                          <button
+                            onClick={handleSignout}
+                            className="text-sm md:text-lg font-medium text-stone-500 hover:text-stone-950"
+                          >
+                            Sign Out
+                          </button>
+                        </li>
+                        <li className="text-sm md:text-lg font-medium text-stone-500 hover:text-stone-950">{currentUser.email}</li>
                       </ul>
                     </div>
                   )}

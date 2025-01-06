@@ -1,11 +1,14 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { FaGoogle } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { AuthContext } from "../Context/AuthContext";
 
 function Login() {
+  const { loginUser, signInUsingGoogle } = useContext(AuthContext);
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -13,9 +16,17 @@ function Login() {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     console.log("Login Data:", data);
-    toast.success("Login Successful", { position: "top-right" });
+    const user = await loginUser(data.email, data.password);
+    if (user) {
+      toast.success("Login Successful", { position: "top-right" });
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
+    } else {
+      toast.error("Invalid email or password", { position: "top-right" });
+    }
     reset(); // Clear input fields
   };
 
@@ -33,6 +44,24 @@ function Login() {
           position: "top-right",
         });
       }
+    }
+  };
+
+  const logInWithGoogle = async () => {
+    try {
+      const res = await signInUsingGoogle();
+      console.log("Google Sign In Response:", res);
+      if (res) {
+        toast.success("Login Successful using Google", {
+          position: "top-right",
+        });
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
+      }
+    } catch (error) {
+      console.error("Error signing in with Google:", error);
+      toast.error("Failed to sign in with Google", { position: "top-right" });
     }
   };
 
@@ -127,7 +156,10 @@ function Login() {
           </p>
 
           <div className="mt-4">
-            <button className="w-full flex flex-wrap gap-1 items-center justify-center bg-secondary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            <button
+              onClick={logInWithGoogle}
+              className="w-full flex flex-wrap gap-1 items-center justify-center bg-secondary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
               <FaGoogle className="mr-2" />
               Sign in with Google
             </button>

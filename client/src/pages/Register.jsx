@@ -1,11 +1,19 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useContext } from "react";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 
 import { FaGoogle } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer, Zoom } from "react-toastify";
+import { AuthContext } from "../Context/AuthContext";
+import { useRegisterUserinDBMutation } from "../redux/features/users/usersApi";
 
 function Register() {
+  const navigate = useNavigate();
+
+  const { registerUser, signInUsingGoogle } = useContext(AuthContext);
+
+  const [registerUserInDb] = useRegisterUserinDBMutation();
+
   const {
     register,
     handleSubmit,
@@ -13,10 +21,31 @@ function Register() {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     console.log("Register Data:", data);
-    toast.success("Register Successful", { position: "top-right" });
-    reset();
+    console.log(data.email, data.password);
+    try {
+      const user = await registerUser(data.email, data.password);
+      console.log("Registered User:", user); // Debugging
+      if (user) {
+        toast.success("User registered successfully");
+
+        const { email: userEmail, displayName } = user; 
+
+        const username = displayName || user.email.split("@")[0];
+        console.log(displayName)
+
+        await registerUserInDb({email:userEmail,username})
+
+        navigate("/");
+      } else {
+        toast.error("Failed to register user");
+      }
+      reset(); // Reset form fields after successful registration
+    } catch (error) {
+      toast.error("Please provide a valid email and password");
+      console.log(error);
+    }
   };
 
   const onError = (errors) => {
@@ -30,6 +59,20 @@ function Register() {
       toast.error("Password must be at least 6 characters long", {
         position: "top-right",
       });
+    }
+  };
+
+  const SignUpWithGoogle = async () => {
+    try {
+      const user = await signInUsingGoogle();
+      if (user) {
+        toast.success("User registered successfully");
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
+      }
+    } catch (error) {
+      toast.error(error.message);
     }
   };
 
@@ -115,7 +158,10 @@ function Register() {
 
           {/* google sign in */}
           <div className="mt-4">
-            <button className="w-full flex flex-wrap gap-1 items-center justify-center bg-secondary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none">
+            <button
+              onClick={SignUpWithGoogle}
+              className="w-full flex flex-wrap gap-1 items-center justify-center bg-secondary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none"
+            >
               <FaGoogle className="mr-2" />
               Sign in with Google
             </button>

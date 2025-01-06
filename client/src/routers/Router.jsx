@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
-import { Home, Login, Register,CartPage, CheckoutPage } from "../pages/index";
+import { Home, Login, Register,CartPage, CheckoutPage,SingleBook } from "../pages/index";
 
 // Define your routes here
 const router = createBrowserRouter([
@@ -20,6 +20,10 @@ const router = createBrowserRouter([
       {
         path: "checkout",
         element: <CheckoutPage />,
+      },
+      {
+        path:"books/:bookId",
+        element :<SingleBook />
       }
     ],
   },
