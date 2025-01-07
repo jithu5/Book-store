@@ -50,6 +50,11 @@ export const Login = AsyncHandler(async (req, res) => {
     }
 })
 
+export const Logout = AsyncHandler(async (req, res) => {
+    res.clearCookie('token', { path: '/' });
+    return res.json(new ApiResponse(200, null, 'User logged out successfully'));
+})
+
 export const getCartBooks = AsyncHandler(async(req,res)=>{
     const userId = req.user
     console.log("User id: " + userId)
@@ -90,6 +95,7 @@ export const getCartBooks = AsyncHandler(async(req,res)=>{
                      author: '$cartBooks.author',
                      newPrice: '$cartItems.totalAmount',
                      cartId: '$cartItems._id',
+                     quantity: '$cartItems.quantity',
                      coverImage: '$cartBooks.coverImage'
                  },
              },

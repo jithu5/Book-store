@@ -8,9 +8,9 @@ import {
     deleteImageCloudinary,
     uploadImageToCloudinary,
 } from '../config/cloudinary.config.js';
+import UserModel from "../models/user.model.js"
 
 import { extractPublicId } from '../utils/ExtractPublicId.js';
-import mongoose from 'mongoose';
 
 export const createBooks = AsyncHandler(async (req, res) => {
     const { title, description, oldPrice, newPrice, category, trending } =
@@ -171,12 +171,6 @@ export const addToCart = AsyncHandler(
             const book = await BookModel.findById(bookId);
             if (!book) {
                 throw new ApiError(404, 'Book not found');
-            }
-            const existingCart = await CartModel.findOne({
-                bookId,
-            });
-            if (existingCart) {
-                throw new ApiError("Cart already exists")
             }
             const newCart = await CartModel.create({
                 userId,

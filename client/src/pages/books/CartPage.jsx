@@ -1,148 +1,115 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { addToCart, clearCart, removeFromCart, setCart } from "../../redux/features/cart/cartSlice";
-import { useGetCartBooksDbQuery } from "../../redux/features/users/usersApi";
 import { useRemoveFromCartDbMutation } from "../../redux/features/books/booksApi";
+import { useGetCartBooksDbQuery } from "../../redux/features/users/usersApi";
+import { setCart, removeFromCart,clearCart } from "../../redux/features/cart/cartSlice";
 
-function CartPage() {
-  const cartItems = useSelector((state) => state.cart.cartitems);
-
+const CartPage = () => {
   const dispatch = useDispatch();
-
-  const {data,isLoading,error} = useGetCartBooksDbQuery()
+  const { data, isLoading, error } = useGetCartBooksDbQuery(
+    undefined,
+    { refetchOnMountOrArgChange: true, staleTime: 5000 } // Ensure fresh fetch
+  );
+  const cartItems = useSelector((state) => state.cart.cartitems);
 
   const [removeFromCartDb] = useRemoveFromCartDbMutation();
 
-  useEffect(()=>{
-    if(data?.data){
-      dispatch(clearCart())
-      dispatch(setCart(data?.data))
-     
+  // Synchronize Redux state with backend data
+  useEffect(() => {
+    if (data?.data) {
+      dispatch(setCart(data.data)); // Update Redux state
     }
-  },[data,dispatch,isLoading]);
-console.log(cartItems)
+  }, [data, dispatch]);
 
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error loading cart: {error.message}</p>;
-  
+  if (isLoading) {
+    return <p className="text-center mt-6">Loading...</p>;
+  }
+  // Remove item from cart
+  const handleRemoveItem = async (id) => {
+    if (!id) {
+      console.error("Invalid book ID, cannot remove item");
+      return;
+    }
 
-  const handleClearCart = () => {
+    try {
+      // Optimistically remove the item from Redux state
+      dispatch(removeFromCart(id));
+
+      // Trigger backend mutation
+      await removeFromCartDb(id);
+    } catch (err) {
+      console.error("Failed to remove item:", err);
+
+      // Optionally revert state if the backend request fails
+      dispatch(setCart(data?.data || [])); // Revert to backend data if necessary
+    }
+  };
+
+   const handleClearCart = async ()=>{
     dispatch(clearCart());
-  };
-  const handleremoveItem = (id) => {
-    dispatch(removeFromCart(id));
-    console.log(id)
-    removeFromCartDb(id);
-  };
+    await removeFromCartDb(); // Clear cart and refetch data from the backend
+   }
 
-  const totalprice = cartItems?.reduce((acc, item) => acc + item.newPrice, 0);
+  if (error) {
+    return (
+      <p className="text-center mt-6 text-red-500">
+        Failed to load cart: {error.message}
+      </p>
+    );
+  }
 
   return (
-    <>
-      <div className="flex mt-12 h-full flex-col overflow-hidden bg-white shadow-xl">
-        <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
-          <div className="flex items-start justify-between">
-            <div className="text-lg font-medium text-gray-900">
-              Shopping cart
-            </div>
-            <div className="ml-3 flex h-7 items-center ">
-              <button
-                onClick={handleClearCart}
-                type="button"
-                className="relative -m-2 py-1 px-2 bg-red-500 text-white rounded-md hover:bg-secondary transition-all duration-200  "
-              >
-                <span className="">Clear Cart</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-8">
-            <div className="flow-root">
-              {cartItems.length === 0 && (
-                <div className="flex items-center justify-center">
-                  <h1 className="text-2xl font-semibold">Cart is Empty</h1>
-                </div>
-              )}
-              <ul role="list" className="-my-6 divide-y divide-gray-200">
-                {cartItems.length !== 0 &&
-                  cartItems.map((item) => (
-                    <li key={item.cartId} className="flex py-6">
-                      <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                        <img
-                          alt=""
-                          src={item.coverImage}
-                          className="h-full w-full object-cover object-center"
-                        />
-                      </div>
-
-                      <div className="ml-4 flex flex-1 flex-col">
-                        <div>
-                          <div className="flex flex-wrap justify-between text-base font-medium text-gray-900">
-                            <h3>
-                              <Link to="/">{item.title}</Link>
-                            </h3>
-                            <p className="sm:ml-4">${item.newPrice}</p>
-                          </div>
-                          <p className="mt-1 text-sm text-gray-500 capitalize">
-                            <strong>Category:</strong> {item.category}
-                          </p>
-                        </div>
-                        <div className="flex flex-1 flex-wrap items-end justify-between space-y-2 text-sm">
-                          <p className="text-gray-500">
-                            <strong>Qty:</strong> 1
-                          </p>
-
-                          <div className="flex">
-                            <button
-                              onClick={() => handleremoveItem(item.cartId)}
-                              type="button"
-                              className="font-medium text-indigo-600 hover:text-indigo-500"
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
-          <div className="flex justify-between text-base font-medium text-gray-900">
-            <p>Subtotal</p>
-            <p>${totalprice}</p>
-          </div>
-          <p className="mt-0.5 text-sm text-gray-500">
-            Shipping and taxes calculated at checkout.
-          </p>
-          <div className="mt-6">
-            <Link
-              to="/checkout"
-              className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
-            >
-              Checkout
-            </Link>
-          </div>
-          <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
-            <Link to="/">
-              or
-              <button
-                type="button"
-                className="font-medium text-indigo-600 hover:text-indigo-500 ml-1"
-              >
-                Continue Shopping
-                <span aria-hidden="true"> &rarr;</span>
-              </button>
-            </Link>
-          </div>
-        </div>
+    <div className="flex flex-col mt-12 bg-white shadow-xl">
+      <div className="px-6 py-4 flex items-center justify-between border-b">
+        <h1 className="text-xl font-bold">Your Shopping Cart</h1>
       </div>
-    </>
+
+      <div className="relative p-6 flex-1">
+        {cartItems.length === 0 ? (
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold">Your Cart is Empty</h2>
+          </div>
+        ) : (<>
+          <button className="absolute top-2 right-3 bg-red-600 px-3 py-1 text-white font-semibold rounded-md">clear Cart</button>
+          <ul className="space-y-4 mt-10">
+            {cartItems.map((item) => (
+              <CartItem
+                key={item.cartId}
+                item={item}
+                onRemove={handleRemoveItem}
+              />
+            ))}
+          </ul>
+        </>
+        )}
+      </div>
+    </div>
   );
-}
+};
+
+const CartItem = ({ item, onRemove }) => (
+  <li className="flex items-center justify-between">
+    <div className="flex items-center space-x-4">
+      <img
+        src={item.coverImage}
+        alt={item.title}
+        className="w-16 h-16 object-cover rounded"
+      />
+      <div>
+        <h3 className="font-semibold">{item.title}</h3>
+        <p className="text-sm text-gray-500">{item.category}</p>
+        <p className="text-sm text-gray-500">
+          <strong>Price:</strong> ${item.newPrice}
+        </p>
+      </div>
+    </div>
+    <button
+      onClick={() => onRemove(item.cartId)} // Ensure a valid ID is passed
+      className="px-3 py-2 text-sm text-red-600 hover:underline"
+    >
+      Remove
+    </button>
+  </li>
+);
 
 export default CartPage;

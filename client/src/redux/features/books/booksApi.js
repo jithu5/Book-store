@@ -15,7 +15,7 @@ const baseQuery = fetchBaseQuery({
 const booksApi = createApi({
   reducerPath: "booksApi",
   baseQuery,
-  tagTypes: ["Books"],
+  tagTypes: ["Books","Cart","Users"],
   endpoints: (builder) => ({
     fetchAllBooks: builder.query({
       query: () => "/",
@@ -69,10 +69,7 @@ const booksApi = createApi({
         console.log(response.data);
         return response.data;
       },
-      invalidatesTags: (result, error, bookId) => [
-        { type: "Books", bookId },
-        { type: "Cart" },
-      ],
+      invalidatesTags: ["Cart", "Users"],
     }),
     removeFromCartDb: builder.mutation({
       query: (bookId) => ({
@@ -80,12 +77,8 @@ const booksApi = createApi({
         method: "DELETE",
         credentials: "include",
       }),
-      invalidatesTags: (result, error, bookId) => [
-        { type: "Books", bookId },
-        { type: "Cart" },
-      ],
-    })
-
+      invalidatesTags: ["Cart","Users"],
+    }),
   }),
 });
 

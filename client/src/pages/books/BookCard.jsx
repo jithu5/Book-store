@@ -1,32 +1,48 @@
 import React from "react";
 
-
 import { FiShoppingCart } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../redux/features/cart/cartSlice";
 import { useAddToCartDbMutation } from "../../redux/features/books/booksApi";
 
+import Swal from "sweetalert2";
+
 function BookCard({ book }) {
   const dispatch = useDispatch();
 
-  const [addToCartDb,{isSuccess,isLoading}] = useAddToCartDbMutation();
+  const [addToCartDb] = useAddToCartDbMutation();
 
   const handleAddToCart =async (product) => {
   try {
     // Dispatch to Redux store
-    dispatch(addToCart(product));
+    dispatch(addToCart(product._id));
 
     // Call the API to add the book to the cart in the database
     const response = await addToCartDb(product._id).unwrap();  // Using unwrap to get the response
     if (response) {
       // Optionally, show a success notification
-      alert('Book added to cart successfully!');
+       Swal.fire({
+                title: "Book added to cart!",
+                icon: "success",
+                confirmButtonText: "Continue Shopping",
+                confirmButtonColor: "#FFCE1A",
+                color: "#0D0842",
+                position: "top-right",
+              });
     }
   } catch (error) {
     // Handle any errors from the API call
     console.error('Failed to add to cart:', error);
-    alert('Failed to add book to cart. Please try again.');
+    Swal.fire({
+      title: "Book already in cart!",
+      icon: "info",
+      confirmButtonText: "View Cart",
+      confirmButtonColor: "#FFCE1A",
+      showCancelButton: true,
+      cancelButtonColor: "#DC143C",
+      position: "top-right",
+    });
   }
   }
   return (

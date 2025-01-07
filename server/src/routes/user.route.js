@@ -1,5 +1,5 @@
 import express from 'express';
-import { getCartBooks, Login, signUp } from '../controller/user-controller.js';
+import { getCartBooks, Login, Logout, signUp } from '../controller/user-controller.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 
 const userRouter = express.Router();
@@ -10,6 +10,8 @@ userRouter.get("/cart",authMiddleware,getCartBooks)
 userRouter.post('/register',signUp)
 
 userRouter.post('/login',Login)
+
+userRouter.post('/logout',authMiddleware,Logout)
 
 
 export default userRouter;

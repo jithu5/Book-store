@@ -1,26 +1,58 @@
-import React, { useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import React, { useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { FiShoppingCart } from "react-icons/fi";
-import { useFetchBookByIdQuery } from '../../redux/features/books/booksApi'
-import { useDispatch } from 'react-redux';
-import { addToCart } from '../../redux/features/cart/cartSlice';
+import {
+  useAddToCartDbMutation,
+  useFetchBookByIdQuery,
+} from "../../redux/features/books/booksApi";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../../redux/features/cart/cartSlice";
+import Swal from "sweetalert2";
 
 function SingleBook() {
   const { bookId } = useParams();
   // fetch book data from API and display it here
-  const { data,isError,isLoading } = useFetchBookByIdQuery(bookId);
+  const { data, isError, isLoading } = useFetchBookByIdQuery(bookId);
   const book = data?.data;
   console.log(book);
 
-  const dispatch = useDispatch()
+  const [addToCartDb] = useAddToCartDbMutation();
 
-    useEffect(() => {
-      window.scrollTo(0, 0); // Scroll to the top of the page
-    }, [bookId]);
+  const dispatch = useDispatch();
 
-    const handleAddToCart = (product) => {
-        dispatch(addToCart(product));
+  useEffect(() => {
+    window.scrollTo(0, 0); // Scroll to the top of the page
+  }, [bookId]);
+
+  const handleAddToCart = async (product) => {
+    dispatch(addToCart(product));
+    try {
+      const response = await addToCartDb(product._id).unwrap(); // Using unwrap to get the response
+      if (response) {
+        // Optionally, show a success notification
+        Swal.fire({
+          title: "Book added to cart!",
+          icon: "success",
+          confirmButtonText: "Continue Shopping",
+          confirmButtonColor: "#FFCE1A",
+          color: "#0D0842",
+          position: "top-right",
+        });
       }
+    } catch (error) {
+      // Handle any errors from the API call
+      console.error("Failed to add to cart:", error);
+      Swal.fire({
+        title: "Book already in cart!",
+        icon: "info",
+        confirmButtonText: "View Cart",
+        confirmButtonColor: "#FFCE1A",
+        showCancelButton: true,
+        cancelButtonColor: "#DC143C",
+        position: "top-right",
+      });
+    }
+  };
 
   // Show a loading indicator while the data is being fetched
   if (isLoading) {

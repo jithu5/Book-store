@@ -8,6 +8,7 @@ const userApi = createApi({
         baseUrl: `${getBaseUrl()}/api/users`,
         credentials: "include",
     }),
+    tagTypes:["Users","Cart"],
     endpoints: (builder) => ({
         registerUserinDB: builder.mutation({
             query:(newUser)=>({
@@ -37,16 +38,24 @@ const userApi = createApi({
                 invalidatesTags: ["Users"]
             })
         }),
+        logoutUserDb: builder.mutation({
+            query:()=>({
+                url:"logout",
+                method:"POST",
+                credentials:"include"
+            }),
+            invalidatesTags: ["Users"]
+        }),
         getCartBooksDb: builder.query({
             query:()=>({
                 url:"/cart",
                 credentials:"include"
             }),
-            providesTags:["Cart","Users"]
+            // providesTags:["Cart","Users"]
         })
     })
 })
 
-export const { useRegisterUserinDBMutation, useLoginUserDbMutation,useGetCartBooksDbQuery } = userApi
+export const { useRegisterUserinDBMutation, useLoginUserDbMutation,useGetCartBooksDbQuery,useLogoutUserDbMutation } = userApi
 
 export default userApi;
