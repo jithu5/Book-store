@@ -1,5 +1,5 @@
 import express from 'express';
-import { addToCart, createBooks, deleteBook, getBookById, getBooks, updateBook } from "../controller/book-controller.js";
+import { addToCart, createBooks, deleteBook, deleteCartitem, getBookById, getBooks, updateBook } from "../controller/book-controller.js";
 import { upload } from '../middlewares/multer.middleware.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 
@@ -25,6 +25,7 @@ bookRoute.delete("/delete/:bookId",deleteBook)
 // add to cart
 bookRoute.post("/add-cart/:bookId",authMiddleware, addToCart)
 
+bookRoute.delete('/remove-cart/:cartItemId', authMiddleware, deleteCartitem);
 
 
 export default bookRoute;

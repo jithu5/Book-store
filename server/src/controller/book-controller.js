@@ -172,6 +172,12 @@ export const addToCart = AsyncHandler(
             if (!book) {
                 throw new ApiError(404, 'Book not found');
             }
+            const existingCart = await CartModel.findOne({
+                bookId,
+            });
+            if (existingCart) {
+                throw new ApiError("Cart already exists")
+            }
             const newCart = await CartModel.create({
                 userId,
                 bookId,
@@ -187,3 +193,19 @@ export const addToCart = AsyncHandler(
     }
 )
 
+export const deleteCartitem = AsyncHandler(
+    async (req, res) => {
+        const { cartItemId } = req.params;
+        console.log(cartItemId);
+        try {
+            const cartItem = await CartModel.findByIdAndDelete(cartItemId);
+            if (!cartItem) {
+                throw new ApiError(404, 'Cart item not found');
+            }
+            return res.json(
+                new ApiResponse(200, cartItem, 'Cart item deleted successfully')
+            );
+        } catch (error) {
+            throw new ApiError(error.statusCode, error.message);
+        }
+    })

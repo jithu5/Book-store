@@ -1,28 +1,30 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { addToCart, clearCart, removeFromCart } from "../../redux/features/cart/cartSlice";
+import { addToCart, clearCart, removeFromCart, setCart } from "../../redux/features/cart/cartSlice";
 import { useGetCartBooksDbQuery } from "../../redux/features/users/usersApi";
+import { useRemoveFromCartDbMutation } from "../../redux/features/books/booksApi";
 
 function CartPage() {
   const cartItems = useSelector((state) => state.cart.cartitems);
 
   const dispatch = useDispatch();
 
-  const {data,isFetching} = useGetCartBooksDbQuery()
+  const {data,isLoading,error} = useGetCartBooksDbQuery()
 
-  console.log(data?.data)
+  const [removeFromCartDb] = useRemoveFromCartDbMutation();
 
-  useEffect(() => {
-    if (!isFetching) {
-      
-      if (cartItems.length === 0 && data.data.length > 0) {
-        data.data.map((item) => {
-          // dispatch(addToCart(item))
-        })
-      }
+  useEffect(()=>{
+    if(data?.data){
+      dispatch(clearCart())
+      dispatch(setCart(data?.data))
+     
     }
-  }, [cartItems,isFetching]);
+  },[data,dispatch,isLoading]);
+console.log(cartItems)
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error loading cart: {error.message}</p>;
   
 
   const handleClearCart = () => {
@@ -30,6 +32,8 @@ function CartPage() {
   };
   const handleremoveItem = (id) => {
     dispatch(removeFromCart(id));
+    console.log(id)
+    removeFromCartDb(id);
   };
 
   const totalprice = cartItems?.reduce((acc, item) => acc + item.newPrice, 0);
@@ -60,10 +64,10 @@ function CartPage() {
                   <h1 className="text-2xl font-semibold">Cart is Empty</h1>
                 </div>
               )}
-                  <ul role="list" className="-my-6 divide-y divide-gray-200">
-              {cartItems.length !== 0 &&
-                cartItems.map((item) => (
-                    <li key={item._id} className="flex py-6">
+              <ul role="list" className="-my-6 divide-y divide-gray-200">
+                {cartItems.length !== 0 &&
+                  cartItems.map((item) => (
+                    <li key={item.cartId} className="flex py-6">
                       <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                         <img
                           alt=""
@@ -91,7 +95,7 @@ function CartPage() {
 
                           <div className="flex">
                             <button
-                              onClick={() => handleremoveItem(item._id)}
+                              onClick={() => handleremoveItem(item.cartId)}
                               type="button"
                               className="font-medium text-indigo-600 hover:text-indigo-500"
                             >
@@ -101,8 +105,8 @@ function CartPage() {
                         </div>
                       </div>
                     </li>
-                ))}
-                  </ul>
+                  ))}
+              </ul>
             </div>
           </div>
         </div>

@@ -89,6 +89,8 @@ export const getCartBooks = AsyncHandler(async(req,res)=>{
                      title: '$cartBooks.title',
                      author: '$cartBooks.author',
                      newPrice: '$cartItems.totalAmount',
+                     cartId: '$cartItems._id',
+                     coverImage: '$cartBooks.coverImage'
                  },
              },
          ]);

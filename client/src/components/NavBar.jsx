@@ -10,6 +10,7 @@ import { HiOutlineShoppingCart } from "react-icons/hi2";
 import avatar from "../assets/avatar.png";
 import { useSelector } from "react-redux";
 import { AuthContext } from "../Context/AuthContext";
+import { useGetCartBooksDbQuery } from "../redux/features/users/usersApi";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard" },
@@ -23,11 +24,22 @@ function NavBar() {
 
   const { currentUser, signOutUser } = useContext(AuthContext);
   console.log(currentUser)
-
+ 
+  const [cartItems, setCartItems] = useState(0)
   const handleSignout = () => {
     signOutUser();
   };
-  const cartItems = useSelector((state) => state.cart.cartitems);
+
+  const {data,isLoading} = useGetCartBooksDbQuery()
+  useEffect(() => {
+    console.log(isLoading)
+      if (!isLoading) {
+        // count cart items here
+        setCartItems(data.data.length)
+        console.log(data.data.length)
+      }
+    
+  }, [data,isLoading]);
 
   return (
     <>
@@ -105,7 +117,7 @@ function NavBar() {
             >
               <HiOutlineShoppingCart className="text-xl md:text-2xl" />
               <span className="text-sm font-semibold sm:ml-1 inline-block">
-                {cartItems?.length}
+                {cartItems}
               </span>
             </Link>
           </div>

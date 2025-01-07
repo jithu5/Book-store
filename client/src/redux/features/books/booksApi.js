@@ -74,6 +74,17 @@ const booksApi = createApi({
         { type: "Cart" },
       ],
     }),
+    removeFromCartDb: builder.mutation({
+      query: (bookId) => ({
+        url: `/remove-cart/${bookId}`,
+        method: "DELETE",
+        credentials: "include",
+      }),
+      invalidatesTags: (result, error, bookId) => [
+        { type: "Books", bookId },
+        { type: "Cart" },
+      ],
+    })
 
   }),
 });
@@ -85,6 +96,7 @@ export const {
   useUpdateBookMutation,
   useDeleteBookMutation,
   useAddToCartDbMutation,
+  useRemoveFromCartDbMutation
 } = booksApi;
 
 export default booksApi;
