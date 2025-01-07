@@ -4,16 +4,6 @@ import { getAuth } from "firebase/auth"
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
-console.log("Firebase Config:");
-console.log("API Key:", import.meta.env.VITE_FIREBASE_API_KEY);
-console.log("Auth Domain:", import.meta.env.VITE_FIREBASE_AUTH_DOMAIN);
-console.log("Project ID:", import.meta.env.VITE_FIREBASE_PROJECT_ID);
-console.log("Storage Bucket:", import.meta.env.VITE_FIREBASE_STORAGE_BUCKET);
-console.log(
-  "Messaging Sender ID:",
-  import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID
-);
-console.log("App ID:", import.meta.env.VITE_FIREBASE_APP_ID);
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -29,4 +19,3 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
-console.log("Firebase app initialized:", app);

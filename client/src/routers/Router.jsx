@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
 import { Home, Login, Register,CartPage, CheckoutPage,SingleBook } from "../pages/index";
+import {ProtectedRoute} from "../components/index.js"
 
 // Define your routes here
 const router = createBrowserRouter([
@@ -15,15 +16,19 @@ const router = createBrowserRouter([
       },
       {
         path: "cart",
-        element: <CartPage />,
+        element: <ProtectedRoute><CartPage/></ProtectedRoute>,
       },
       {
         path: "checkout",
-        element: <CheckoutPage />,
+        element:<ProtectedRoute>
+          <CheckoutPage />
+        </ProtectedRoute> 
       },
       {
         path:"books/:bookId",
-        element :<SingleBook />
+        element :<ProtectedRoute>
+          <SingleBook />
+        </ProtectedRoute>
       }
     ],
   },

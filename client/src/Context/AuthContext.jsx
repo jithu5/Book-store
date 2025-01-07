@@ -15,9 +15,10 @@ const AuthContext = createContext({
   loginUser: async (email, password) => {},
   signInUsingGoogle: async () => {},
   signOutUser: async () => {},
+  loading: true,
 });
 
-const googleProvider = new GoogleAuthProvider()
+const googleProvider = new GoogleAuthProvider();
 
 function AuthContextProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
@@ -49,61 +50,62 @@ function AuthContextProvider({ children }) {
         password
       );
       if (!userCredentials) {
-        return null
+        return null;
       }
       return userCredentials.user;
     } catch (error) {
-        if (error.code == "auth/invalid-credential") {
-          toast.error("Email or password doesn't match.");
-        } else {
-          toast.error(error.message);
-        }
+      if (error.code == "auth/invalid-credential") {
+        toast.error("Email or password doesn't match.");
+      } else {
+        toast.error(error.message);
+      }
 
-        console.log("Error in logging in user:", error.message);
-        console.log(error.code)
-        throw error;
+      console.log("Error in logging in user:", error.message);
+      console.log(error.code);
+      throw error;
     }
   }
 
   // using google Authentication
   async function signInUsingGoogle() {
-   try {
-     const result = await signInWithPopup(auth,googleProvider)
-     const user  = result.user;
-     console.log("Google user:", user)
-     return user;
-   } catch (error) {
-    console.log("Error in signing in user using google:", error.message)
-   }
-   throw error;
-}
-
-useEffect(() => {
-  const unsubscribe = auth.onAuthStateChanged((user) => {
-    setCurrentUser(user);
-    setLoading(false);
-
-    if (user) {
-        const {email, displayName,photoURL} = user;
-        const userData={email: email, username: displayName, photo: photoURL}
-    }
-  });
-  return ()=>
-    unsubscribe()
-    // unsubscribe on unmount
-}, [])
-
-
-async function signOutUser() {
     try {
-        await signOut(auth);
-        toast.success("User logged out successfully")
-        
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      console.log("Google user:", user);
+      return user;
     } catch (error) {
-        console.log("Error in logging out user:", error.message)
-        toast.error("Error in logging out user")
-    } 
-}
+      console.log("Error in signing in user using google:", error.message);
+    }
+    throw error;
+  }
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setLoading(false);
+
+      if (user) {
+        const { email, displayName, photoURL } = user;
+        const userData = {
+          email: email,
+          username:displayName || email.split("@")[0],
+          photo: photoURL,
+        };
+        setCurrentUser(userData);
+      }
+    });
+    return () => unsubscribe();
+    // unsubscribe on unmount
+  }, []);
+
+  async function signOutUser() {
+    try {
+      await signOut(auth);
+      toast.success("User logged out successfully");
+    } catch (error) {
+      console.log("Error in logging out user:", error.message);
+      toast.error("Error in logging out user");
+    }
+  }
 
   const authContextValue = {
     currentUser,
@@ -111,6 +113,7 @@ async function signOutUser() {
     loginUser,
     signInUsingGoogle,
     signOutUser,
+    loading
   };
 
   return (

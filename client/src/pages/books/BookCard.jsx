@@ -5,12 +5,29 @@ import { FiShoppingCart } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../redux/features/cart/cartSlice";
+import { useAddToCartDbMutation } from "../../redux/features/books/booksApi";
 
 function BookCard({ book }) {
   const dispatch = useDispatch();
 
-  const handleAddToCart = (product) => {
+  const [addToCartDb,{isSuccess,isLoading}] = useAddToCartDbMutation();
+
+  const handleAddToCart =async (product) => {
+  try {
+    // Dispatch to Redux store
     dispatch(addToCart(product));
+
+    // Call the API to add the book to the cart in the database
+    const response = await addToCartDb(product._id).unwrap();  // Using unwrap to get the response
+    if (response) {
+      // Optionally, show a success notification
+      alert('Book added to cart successfully!');
+    }
+  } catch (error) {
+    // Handle any errors from the API call
+    console.error('Failed to add to cart:', error);
+    alert('Failed to add book to cart. Please try again.');
+  }
   }
   return (
     <>

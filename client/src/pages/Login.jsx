@@ -5,9 +5,13 @@ import { useForm } from "react-hook-form";
 import { toast, ToastContainer, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthContext } from "../Context/AuthContext";
+import { useLoginUserDbMutation } from "../redux/features/users/usersApi";
 
 function Login() {
   const { loginUser, signInUsingGoogle } = useContext(AuthContext);
+
+  const [loginUserDb] = useLoginUserDbMutation();
+
   const navigate = useNavigate();
   const {
     register,
@@ -20,10 +24,16 @@ function Login() {
     console.log("Login Data:", data);
     const user = await loginUser(data.email, data.password);
     if (user) {
-      toast.success("Login Successful", { position: "top-right" });
-      setTimeout(() => {
-        navigate("/");
-      }, 2000);
+      const response = await loginUserDb({email: user.email});
+      console.log(response);
+      if (response) {
+        toast.success("Login Successful", { position: "top-right" });
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
+      } else {
+        toast.error("Failed to login", { position: "top-right" });
+      }
     } else {
       toast.error("Invalid email or password", { position: "top-right" });
     }

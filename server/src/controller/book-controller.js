@@ -2,6 +2,7 @@ import { AsyncHandler } from '../utils/AsyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import BookModel from '../models/book.model.js';
+import CartModel from "../models/cart.model.js"
 import fs from 'fs';
 import {
     deleteImageCloudinary,
@@ -9,6 +10,7 @@ import {
 } from '../config/cloudinary.config.js';
 
 import { extractPublicId } from '../utils/ExtractPublicId.js';
+import mongoose from 'mongoose';
 
 export const createBooks = AsyncHandler(async (req, res) => {
     const { title, description, oldPrice, newPrice, category, trending } =
@@ -159,3 +161,29 @@ export const deleteBook = AsyncHandler(async (req, res) => {
         throw new ApiError(error.statusCode, error.message);
     }
 });
+
+export const addToCart = AsyncHandler(
+    async (req, res) => {
+        const { bookId } = req.params;
+        const userId  = req.user;
+        console.log(bookId, userId);
+        try {
+            const book = await BookModel.findById(bookId);
+            if (!book) {
+                throw new ApiError(404, 'Book not found');
+            }
+            const newCart = await CartModel.create({
+                userId,
+                bookId,
+                totalAmount: book.newPrice,
+            });
+
+            return res.status(201).json(
+                new ApiResponse(201, newCart, 'Book added to cart successfully')
+            );
+        } catch (error) {
+            throw new ApiError(error.statusCode, error.message)
+        }
+    }
+)
+

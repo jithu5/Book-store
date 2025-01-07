@@ -85,7 +85,7 @@ function NavBar() {
                             Sign Out
                           </button>
                         </li>
-                        <li className="text-sm md:text-lg font-medium text-stone-500 hover:text-stone-950">{currentUser.email}</li>
+                        <li className="text-sm md:text-lg font-medium text-stone-500 hover:text-stone-950">{currentUser.username}</li>
                       </ul>
                     </div>
                   )}

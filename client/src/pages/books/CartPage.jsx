@@ -1,13 +1,29 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { getImgUrl } from "../../utils/getimgUrl";
-import { clearCart, removeFromCart } from "../../redux/features/cart/cartSlice";
+import { addToCart, clearCart, removeFromCart } from "../../redux/features/cart/cartSlice";
+import { useGetCartBooksDbQuery } from "../../redux/features/users/usersApi";
 
 function CartPage() {
   const cartItems = useSelector((state) => state.cart.cartitems);
 
   const dispatch = useDispatch();
+
+  const {data,isFetching} = useGetCartBooksDbQuery()
+
+  console.log(data?.data)
+
+  useEffect(() => {
+    if (!isFetching) {
+      
+      if (cartItems.length === 0 && data.data.length > 0) {
+        data.data.map((item) => {
+          // dispatch(addToCart(item))
+        })
+      }
+    }
+  }, [cartItems,isFetching]);
+  
 
   const handleClearCart = () => {
     dispatch(clearCart());

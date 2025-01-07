@@ -23,30 +23,52 @@ function Register() {
 
   const onSubmit = async (data) => {
     console.log("Register Data:", data);
-    console.log(data.email, data.password);
+
     try {
+      // Register the user with Firebase/Auth context
       const user = await registerUser(data.email, data.password);
-      console.log("Registered User:", user); // Debugging
+      console.log("Registered User:", user);
+
       if (user) {
-        toast.success("User registered successfully");
+        const { email: userEmail, displayName } = user;
 
-        const { email: userEmail, displayName } = user; 
-
+        // Fallback to username if displayName is not available
         const username = displayName || user.email.split("@")[0];
-        console.log(displayName)
+        console.log("Username for DB:", username);
 
-        await registerUserInDb({email:userEmail,username})
+        try {
+          // Save user to DB
+          const myUser = await registerUserInDb({
+            email: userEmail,
+            username,
+          }).unwrap();
+          console.log("User saved in DB:", myUser);
 
-        navigate("/");
+          toast.success("User registered successfully");
+
+          // Navigate to home after a delay
+          setTimeout(() => {
+            navigate("/");
+          }, 1000);
+        } catch (err) {
+          console.error("Error saving user to DB:", err);
+          toast.error("Failed to save user to DB");
+          return; // Exit early if saving to DB fails
+        }
       } else {
         toast.error("Failed to register user");
+        return; // Exit early if user registration fails
       }
-      reset(); // Reset form fields after successful registration
+
+      // Reset the form
+      console.log("Resetting form...");
+      reset();
     } catch (error) {
+      console.error("Error during registration:", error);
       toast.error("Please provide a valid email and password");
-      console.log(error);
     }
   };
+
 
   const onError = (errors) => {
     if (errors.email && errors.password) {

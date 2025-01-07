@@ -4,12 +4,14 @@ import cookieParser from 'cookie-parser';
 import "dotenv/config";
 import {fileURLToPath} from "url"
 import path, {dirname} from "path"
+import morgan from "morgan"
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Import routes
 import bookRoute from './routes/book.route.js';
+import userRouter from './routes/user.route.js';
 
 const app = express();
 
@@ -21,6 +23,8 @@ app.use(
     credentials: true,
   })
 );
+
+app.use(morgan('dev')); // Logging middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -28,6 +32,7 @@ app.use(cookieParser());
 
 // Routes
 app.use('/api/books', bookRoute);
+app.use('/api/users', userRouter);
 
 
 

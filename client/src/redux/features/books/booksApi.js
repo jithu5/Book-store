@@ -59,6 +59,22 @@ const booksApi = createApi({
       }),
       invalidatesTags: ["Books"],
     }),
+    addToCartDb: builder.mutation({
+      query: (bookId) => ({
+        url: `/add-cart/${bookId}`,
+        method: "POST",
+        credentials: "include",
+      }),
+      transformResponse: (response) => {
+        console.log(response.data);
+        return response.data;
+      },
+      invalidatesTags: (result, error, bookId) => [
+        { type: "Books", bookId },
+        { type: "Cart" },
+      ],
+    }),
+
   }),
 });
 
@@ -68,6 +84,7 @@ export const {
   useCreateBookMutation,
   useUpdateBookMutation,
   useDeleteBookMutation,
+  useAddToCartDbMutation,
 } = booksApi;
 
 export default booksApi;

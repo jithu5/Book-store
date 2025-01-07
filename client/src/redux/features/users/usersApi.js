@@ -17,21 +17,36 @@ const userApi = createApi({
                 headers:{
                     "Content-Type":"application/json"
                 }
-            })
+            }),
+            transformResponse:(response,meta,arg) => {
+                return response.data;
+            },
+            invalidatesTags: ["Users"]
         }),
-        loginUser: builder.mutation({
+        loginUserDb: builder.mutation({
             query:(user)=>({
                 url:"login",
                 method:"POST",
                 body:JSON.stringify(user),
                 headers:{
                     "Content-Type":"application/json"
-                }
+                },
+                transformResponse:(response,meta,arg) => {
+                    return response.data;
+                },
+                invalidatesTags: ["Users"]
             })
+        }),
+        getCartBooksDb: builder.query({
+            query:()=>({
+                url:"/cart",
+                credentials:"include"
+            }),
+            providesTags:["Cart","Users"]
         })
     })
 })
 
-export const { useRegisterUserinDBMutation, useLoginUserMutation } = userApi
+export const { useRegisterUserinDBMutation, useLoginUserDbMutation,useGetCartBooksDbQuery } = userApi
 
 export default userApi;
