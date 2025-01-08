@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRemoveFromCartDbMutation } from "../../redux/features/books/booksApi";
 import { useGetCartBooksDbQuery } from "../../redux/features/users/usersApi";
 import { setCart, removeFromCart,clearCart } from "../../redux/features/cart/cartSlice";
+import { Link } from "react-router-dom";
 
 const CartPage = () => {
   const dispatch = useDispatch();
@@ -50,6 +51,8 @@ const CartPage = () => {
     await removeFromCartDb(); // Clear cart and refetch data from the backend
    }
 
+   const total = cartItems.reduce((total, item)=>total + item.newPrice,0)
+
   if (error) {
     return (
       <p className="text-center mt-6 text-red-500">
@@ -69,19 +72,51 @@ const CartPage = () => {
           <div className="text-center">
             <h2 className="text-2xl font-semibold">Your Cart is Empty</h2>
           </div>
-        ) : (<>
-          <button className="absolute top-2 right-3 bg-red-600 px-3 py-1 text-white font-semibold rounded-md">clear Cart</button>
-          <ul className="space-y-4 mt-10">
-            {cartItems.map((item) => (
-              <CartItem
-                key={item.cartId}
-                item={item}
-                onRemove={handleRemoveItem}
-              />
-            ))}
-          </ul>
-        </>
+        ) : (
+          <>
+            <button className="absolute top-2 right-3 bg-red-600 px-3 py-1 text-white font-semibold rounded-md">
+              clear Cart
+            </button>
+            <ul className="space-y-4 mt-10">
+              {cartItems.map((item) => (
+                <CartItem
+                  key={item.cartId}
+                  item={item}
+                  onRemove={handleRemoveItem}
+                />
+              ))}
+            </ul>
+          </>
         )}
+      </div>
+      <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
+        <div className="flex justify-between text-base font-medium text-gray-900">
+          <p>Subtotal</p>
+          <p>${total}</p>
+        </div>
+        <p className="mt-0.5 text-sm text-gray-500">
+          Shipping and taxes calculated at checkout.
+        </p>
+        <div className="mt-6">
+          <Link
+            to="/checkout"
+            className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+          >
+            Checkout
+          </Link>
+        </div>
+        <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
+          <Link to="/">
+            or
+            <button
+              type="button"
+              className="font-medium text-indigo-600 hover:text-indigo-500 ml-1"
+            >
+              Continue Shopping
+              <span aria-hidden="true"> &rarr;</span>
+            </button>
+          </Link>
+        </div>
       </div>
     </div>
   );

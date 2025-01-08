@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { RiMenu2Line } from "react-icons/ri";
 import { CiSearch } from "react-icons/ci";
 import {
@@ -10,7 +10,10 @@ import {
 import avatar from "../assets/avatar.png";
 import { useDispatch, useSelector } from "react-redux";
 import { AuthContext } from "../Context/AuthContext";
-import { useGetCartBooksDbQuery, useLogoutUserDbMutation } from "../redux/features/users/usersApi";
+import {
+  useGetCartBooksDbQuery,
+  useLogoutUserDbMutation,
+} from "../redux/features/users/usersApi";
 import { setCart } from "../redux/features/cart/cartSlice";
 
 const navigation = [
@@ -24,34 +27,42 @@ function NavBar() {
   const [isDropDown, setIsDropDown] = useState(false);
   const { currentUser, signOutUser } = useContext(AuthContext);
   const cartitems = useSelector((state) => state.cart.cartitems);
-  const [cartItemCount, setCartItemCount] = useState(0)
-  const { data } = useGetCartBooksDbQuery();
+  const [cartItemCount, setCartItemCount] = useState(0);
+  const { data } = useGetCartBooksDbQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+    staleTime: 0,
+  });
 
-  const [logoutUserDb] = useLogoutUserDbMutation()
+  const [logoutUserDb] = useLogoutUserDbMutation();
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
+  const navigate = useNavigate();
 
   const handleSignout = async () => {
     signOutUser();
-    await logoutUserDb()
+    const res = await logoutUserDb();
+    if (res) {
+      setTimeout(() => {
+        navigate("/login");
+      }, 500);
+    }
   };
 
-  console.log(cartitems)
-  useEffect(()=>{
+  console.log(cartitems);
+  useEffect(() => {
     if (cartitems.length > 0) {
-      setCartItemCount(cartitems.length)
-    }else{
-      setCartItemCount(0)
+      setCartItemCount(cartitems.length);
+    } else {
+      setCartItemCount(0);
     }
-  },[cartitems])
+  }, [cartitems]);
 
-  useEffect(()=>{
+  useEffect(() => {
     if (data) {
       dispatch(setCart(data.data));
     }
-  },[data])
-
+  }, [data]);
 
   useEffect(() => {
     const handleOutsideClick = (e) => {
@@ -146,4 +157,3 @@ function NavBar() {
 }
 
 export default NavBar;
- 

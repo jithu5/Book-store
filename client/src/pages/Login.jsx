@@ -62,12 +62,19 @@ function Login() {
       const res = await signInUsingGoogle();
       console.log("Google Sign In Response:", res);
       if (res) {
-        toast.success("Login Successful using Google", {
-          position: "top-right",
-        });
-        setTimeout(() => {
-          navigate("/");
-        }, 2000);
+        const response = await loginUserDb({email:res.email})
+        if (response){
+          toast.success("Login Successful using Google", {
+            position: "top-right",
+          });
+          setTimeout(() => {
+            navigate("/");
+          }, 2000);
+        }else{
+          toast.error("Failed to login using Google", {
+            position: "top-right",
+          });
+        }
       }
     } catch (error) {
       console.error("Error signing in with Google:", error);

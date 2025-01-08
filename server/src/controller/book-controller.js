@@ -172,6 +172,17 @@ export const addToCart = AsyncHandler(
             if (!book) {
                 throw new ApiError(404, 'Book not found');
             }
+            const cartExistsForUser = await CartModel.findOne({
+                $and: [
+                    { userId: userId }, // Replace 'userId' with the actual user ID value or variable
+                    { bookId: bookId }, // Replace 'bookId' with the actual book ID value or variable
+                ],
+            });
+            console.log('exists for user',cartExistsForUser);
+
+            if (cartExistsForUser) {
+                throw new ApiError(400, 'Book already in cart');
+            }
             const newCart = await CartModel.create({
                 userId,
                 bookId,

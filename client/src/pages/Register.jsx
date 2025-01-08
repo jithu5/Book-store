@@ -69,7 +69,6 @@ function Register() {
     }
   };
 
-
   const onError = (errors) => {
     if (errors.email && errors.password) {
       toast.error("Email and Password is required", { position: "top-right" });
@@ -88,10 +87,18 @@ function Register() {
     try {
       const user = await signInUsingGoogle();
       if (user) {
-        toast.success("User registered successfully");
-        setTimeout(() => {
-          navigate("/");
-        }, 1000);
+        const response = await registerUserInDb({
+          email: user.email,
+          username: user.displayName,
+        });
+        if (response) {
+          toast.success("User registered successfully");
+          setTimeout(() => {
+            navigate("/");
+          }, 1000);
+        }
+      } else {
+        toast.error("Failed to register user");
       }
     } catch (error) {
       toast.error(error.message);

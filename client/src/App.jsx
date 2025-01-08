@@ -4,8 +4,16 @@ import { Outlet } from "react-router-dom";
 import { NavBar, Footer } from "./components/index";
 
 import { ToastContainer, Zoom } from "react-toastify";
+import { useContext } from "react";
+import { AuthContext } from "./Context/AuthContext";
 
 function App() {
+  const {currentUser,loading} = useContext(AuthContext)
+
+    if(loading && !currentUser){
+      return <p className="text-center mt-20 text-lg font-semibold">Loading...</p>
+    }
+
   return (
     <>
         <ToastContainer

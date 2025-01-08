@@ -1,35 +1,65 @@
-import React from "react";
+import React, { useContext } from "react";
 
 import { FiShoppingCart } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../redux/features/cart/cartSlice";
 import { useAddToCartDbMutation } from "../../redux/features/books/booksApi";
 
 import Swal from "sweetalert2";
+import { AuthContext } from "../../Context/AuthContext";
 
 function BookCard({ book }) {
   const dispatch = useDispatch();
 
   const [addToCartDb] = useAddToCartDbMutation();
 
+  const {currentUser} = useContext(AuthContext)
+
+  const navigate = useNavigate()
+
   const handleAddToCart =async (product) => {
   try {
     // Dispatch to Redux store
-    dispatch(addToCart(product._id));
+    console.log(product);
+    if (currentUser) {
 
-    // Call the API to add the book to the cart in the database
-    const response = await addToCartDb(product._id).unwrap();  // Using unwrap to get the response
-    if (response) {
-      // Optionally, show a success notification
-       Swal.fire({
-                title: "Book added to cart!",
-                icon: "success",
-                confirmButtonText: "Continue Shopping",
-                confirmButtonColor: "#FFCE1A",
-                color: "#0D0842",
-                position: "top-right",
-              });
+    dispatch(addToCart(product));
+    console.log(currentUser);
+      
+      const response = await addToCartDb(product._id).unwrap();  // Using unwrap to get the response
+      if (response) {
+        // Optionally, show a success notification
+        Swal.fire({
+          title: "Book added to cart!",
+          icon: "success",
+          confirmButtonText: "Continue Shopping",
+          confirmButtonColor: "#FFCE1A",
+          color: "#0D0842",
+          position: "top-right",
+        });
+      }
+    }else{
+      Swal.fire({
+        title: "Please login to add to cart!",
+        icon: "info",
+        confirmButtonText: "Login",
+        confirmButtonColor: "#FFCE1A",
+        showCancelButton: true,
+        cancelButtonColor: "#DC143C",
+        position: "top-right",
+        backdrop: `
+      rgba(0,0,0,0.4)
+      url("https://source.unsplash.com/random/800x600")
+      no-repeat
+    `,
+        backdropBlendMode: "overlay",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Navigate to the login page
+          navigate("/login");
+        }
+      });
     }
   } catch (error) {
     // Handle any errors from the API call

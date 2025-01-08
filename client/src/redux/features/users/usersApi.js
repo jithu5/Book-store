@@ -44,6 +44,9 @@ const userApi = createApi({
                 method:"POST",
                 credentials:"include"
             }),
+            transformResponse:(response,meta,arg) => {
+                return response.data;
+            },
             invalidatesTags: ["Users"]
         }),
         getCartBooksDb: builder.query({

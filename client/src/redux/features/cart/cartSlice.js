@@ -11,11 +11,16 @@ const cartSlice = createSlice({
       state.cartitems = action.payload;
     },
     addToCart: (state, action) => {
+      console.log("Payload received:", action.payload);
+      console.log("Cart item:", state.cartitems)
       const existingBook = state.cartitems.find(
-        (book) => book.cartId === action.payload
+        (book) => book.bookId === action.payload._id || book._id === action.payload._id
       );
+      console.log(existingBook)
       if (!existingBook) {
         state.cartitems.push(action.payload);
+      }else{
+        console.log("Book already added:", existingBook);
       }
       
     },
