@@ -28,8 +28,8 @@ function NavBar() {
   const { currentUser, signOutUser } = useContext(AuthContext);
   const cartitems = useSelector((state) => state.cart.cartitems);
   const [cartItemCount, setCartItemCount] = useState(0);
-  const { data } = useGetCartBooksDbQuery(undefined, {
-    refetchOnMountOrArgChange: true,
+  const { data ,isSuccess} = useGetCartBooksDbQuery(undefined, {
+    refetchOnMountOrArgChange: false,
     staleTime: 0,
   });
 
@@ -49,7 +49,6 @@ function NavBar() {
     }
   };
 
-  console.log(cartitems);
   useEffect(() => {
     if (cartitems.length > 0) {
       setCartItemCount(cartitems.length);
@@ -57,12 +56,14 @@ function NavBar() {
       setCartItemCount(0);
     }
   }, [cartitems]);
-
+  
   useEffect(() => {
-    if (data) {
+    if (data && isSuccess) {
+      console.log("running")
       dispatch(setCart(data.data));
     }
-  }, [data]);
+  }, [data,isSuccess,dispatch]);
+  console.log(cartitems);
 
   useEffect(() => {
     const handleOutsideClick = (e) => {

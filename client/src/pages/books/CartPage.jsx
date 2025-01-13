@@ -7,9 +7,9 @@ import { Link } from "react-router-dom";
 
 const CartPage = () => {
   const dispatch = useDispatch();
-  const { data, isLoading, error } = useGetCartBooksDbQuery(
+  const { data, isLoading, error,isSuccess } = useGetCartBooksDbQuery(
     undefined,
-    { refetchOnMountOrArgChange: true, staleTime: 5000 } // Ensure fresh fetch
+    { refetchOnMountOrArgChange: false } // Ensure fresh fetch
   );
   const cartItems = useSelector((state) => state.cart.cartitems);
 
@@ -17,10 +17,11 @@ const CartPage = () => {
 
   // Synchronize Redux state with backend data
   useEffect(() => {
-    if (data?.data) {
+    if (data && isSuccess) {
+      console.log("runnimng in cart page");
       dispatch(setCart(data.data)); // Update Redux state
     }
-  }, [data, dispatch]);
+  }, [data,isSuccess]);
 
   if (isLoading) {
     return <p className="text-center mt-6">Loading...</p>;

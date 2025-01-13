@@ -63,6 +63,7 @@ function Login() {
       console.log("Google Sign In Response:", res);
       if (res) {
         const response = await loginUserDb({email:res.email})
+        console.log(response)
         if (response){
           toast.success("Login Successful using Google", {
             position: "top-right",

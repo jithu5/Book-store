@@ -35,6 +35,10 @@ export const Login = AsyncHandler(async (req, res) => {
             throw new ApiError(401, "Invalid credentials");
         }
         const token = await user.generateAccessToken();
+        if (!token) {
+            throw new ApiError(401, "Cannot create token");
+        }
+        console.log(token)
         console.log(token)
         return res
             .status(200)
@@ -42,6 +46,7 @@ export const Login = AsyncHandler(async (req, res) => {
                 expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 hour
                 httpOnly: true,
                 secure: false, // set to true for HTTPS only
+                sameSite: 'lax', // Options: 'strict', 'lax', 'none'
             })
             .json(new ApiResponse(200, user, 'User logged in successfully'));
     } catch (error) {

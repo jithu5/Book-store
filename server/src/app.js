@@ -18,10 +18,10 @@ const app = express();
 
 // Middleware setup
 app.use(
-  cors({
-    origin: process.env.CLIENT_URI,
-    credentials: true,
-  })
+    cors({
+        origin: process.env.CLIENT_URI,
+        credentials: true,
+    })
 );
 
 app.use(morgan('dev')); // Logging middleware
