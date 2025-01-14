@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
-import { Home, Login, Register,CartPage, CheckoutPage,SingleBook } from "../pages/index";
+import { Home, Login, Register,CartPage, CheckoutPage,SingleBook,Adminlayout,AdminRegister, AdminLogin } from "../pages/index";
 import {ProtectedRoute} from "../components/index.js"
 
 // Define your routes here
@@ -40,5 +40,19 @@ const router = createBrowserRouter([
     path: "register",
     element: <Register />,
   },
+   {
+    path:"api/auth/admin",
+    element:<Adminlayout/>,
+    children:[
+      {
+        path:"register",
+        element:<AdminRegister/>
+      },
+      {
+        path:"login",
+        element:<AdminLogin/>
+      }
+    ]
+   }
 ]);
 export default router;

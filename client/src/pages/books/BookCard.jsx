@@ -24,10 +24,11 @@ function BookCard({ book }) {
     console.log(product);
     if (currentUser) {
 
-    dispatch(addToCart(product));
+      const response = await addToCartDb(product._id).unwrap();  // Using unwrap to get the response
+    dispatch(addToCart({...product,cartId:response._id}));
+
     console.log(currentUser);
       
-      const response = await addToCartDb(product._id).unwrap();  // Using unwrap to get the response
       if (response) {
         // Optionally, show a success notification
         Swal.fire({

@@ -25,9 +25,9 @@ function SingleBook() {
   }, [bookId]);
 
   const handleAddToCart = async (product) => {
-    dispatch(addToCart(product));
     try {
       const response = await addToCartDb(product._id).unwrap(); // Using unwrap to get the response
+      dispatch(addToCart({ ...product, cartId: response._id }));
       if (response) {
         // Optionally, show a success notification
         Swal.fire({

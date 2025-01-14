@@ -3,6 +3,7 @@ import React from 'react'
 import bannerImg from "../../assets/banner.png"
 
 function Banner() {
+  console.log("hey")
   return (
     <>
       <div className='flex flex-col-reverse md:flex-row py-16 justify-between items-center gap-12'>

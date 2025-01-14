@@ -12,6 +12,7 @@ const __dirname = dirname(__filename);
 // Import routes
 import bookRoute from './routes/book.route.js';
 import userRouter from './routes/user.route.js';
+import AdminRouter from './routes/admin.route.js';
 
 const app = express();
 
@@ -33,7 +34,7 @@ app.use(cookieParser());
 // Routes
 app.use('/api/books', bookRoute);
 app.use('/api/users', userRouter);
-
+app.use('/api/admin',AdminRouter);
 
 
 // Error handling middleware

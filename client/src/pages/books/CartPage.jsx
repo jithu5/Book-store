@@ -2,12 +2,16 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRemoveFromCartDbMutation } from "../../redux/features/books/booksApi";
 import { useGetCartBooksDbQuery } from "../../redux/features/users/usersApi";
-import { setCart, removeFromCart,clearCart } from "../../redux/features/cart/cartSlice";
+import {
+  setCart,
+  removeFromCart,
+  clearCart,
+} from "../../redux/features/cart/cartSlice";
 import { Link } from "react-router-dom";
 
 const CartPage = () => {
   const dispatch = useDispatch();
-  const { data, isLoading, error,isSuccess } = useGetCartBooksDbQuery(
+  const { data, isLoading, error, isSuccess } = useGetCartBooksDbQuery(
     undefined,
     { refetchOnMountOrArgChange: false } // Ensure fresh fetch
   );
@@ -16,12 +20,25 @@ const CartPage = () => {
   const [removeFromCartDb] = useRemoveFromCartDbMutation();
 
   // Synchronize Redux state with backend data
+  // useEffect(() => {
+  //   console.log(isSuccess);
+  //   console.log(data);
+  //   if (isSuccess && data?.data?.length > 0) {
+  //     console.log("running in cart page");
+  //     dispatch(setCart(data.data)); // Update Redux state
+  //   }
+  // }, [data, isSuccess]);
   useEffect(() => {
-    if (data && isSuccess) {
-      console.log("runnimng in cart page");
-      dispatch(setCart(data.data)); // Update Redux state
+    if (isSuccess && data?.data?.length > 0) {
+      console.log("inside data");
+      if (cartItems.length === 0) {
+        console.log("inside cartItems");
+
+        console.log("running in cart page");
+        dispatch(setCart(data.data)); // Update Redux state
+      }
     }
-  }, [data,isSuccess]);
+  }, [data]);
 
   if (isLoading) {
     return <p className="text-center mt-6">Loading...</p>;
@@ -47,12 +64,12 @@ const CartPage = () => {
     }
   };
 
-   const handleClearCart = async ()=>{
+  const handleClearCart = async () => {
     dispatch(clearCart());
     await removeFromCartDb(); // Clear cart and refetch data from the backend
-   }
+  };
 
-   const total = cartItems.reduce((total, item)=>total + item.newPrice,0)
+  const total = cartItems.reduce((total, item) => total + item.newPrice, 0);
 
   if (error) {
     return (
