@@ -2,6 +2,7 @@ import { AsyncHandler } from '../utils/AsyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import AdminModel from '../models/admin.model.js';
+import mongoose from 'mongoose';
 
 export const createAdmin = AsyncHandler(async (req, res) => {
     const { username, email, password,secret } = req.body;
@@ -77,3 +78,84 @@ export const loginAdmin = AsyncHandler(async (req, res) => {
             throw new ApiError(error.statusCode, error.message)
         }
 });
+
+ export const logoutAdmin = AsyncHandler(async (req, res) => {
+    res.clearCookie('adminToken', { path: '/' });
+    return res.json(new ApiResponse(200, 1, 'Admin logged out successfully'));
+})
+
+export const getAdminData = AsyncHandler(async(req,res)=>{
+    const adminId = req.admin
+    console.log("Admin id: " + adminId)
+    try {
+       
+         const createdBooks = await AdminModel.aggregate([
+             { $match: { _id: new mongoose.Types.ObjectId(String(adminId)) } }, // Match admin by ID
+             {
+                 $lookup: {
+                     from: 'books',
+                     localField: 'username',
+                     foreignField: 'author', // Matching by author ID
+                     as: 'Books',
+                 },
+             },
+             {
+                 $unwind: '$Books', // Unwind the books array to process each book separately
+             },
+             {
+                 $lookup: {
+                     from: 'carts',
+                     localField: 'Books._id', // Matching books by their _id
+                     foreignField: 'bookId',
+                     as: 'User',
+                 },
+             },
+             {
+                 $unwind: '$User', // Unwind the User array to get individual user data
+             },
+             {
+                 $lookup: {
+                     from: 'users',
+                     localField: 'User.userId', // Lookup user details by user ID
+                     foreignField: '_id',
+                     as: 'userData',
+                 },
+             },
+             {
+                 $unwind: '$userData', // Unwind the userData array to get individual user details
+             },
+
+             {
+                 $group: {
+                     _id: '$Books._id', // Group by book _id to ensure each book appears only once
+                     title: { $first: '$Books.title' },
+                     authorName: { $first: '$Books.author' },
+                     description: { $first: '$Books.description' },
+                     newPrice: { $first: '$Books.newPrice' },
+                     oldPrice: { $first: '$Books.oldPrice' },
+                     users: { $addToSet: '$userData.username' },
+                     trending: { $first: '$Books.trending' },
+                     // Collect unique users who borrowed t
+                 },
+             },
+
+             {
+                 $project: {
+                     title: 1,
+                     authorName: 1,
+                     description: 1,
+                     newPrice: 1,
+                     oldPrice: 1,
+                     trending: 1,
+                     users: 1,
+                 },
+             },
+         ]);
+         
+         return res.json(
+         new ApiResponse(200, createdBooks, 'Books fetched successfully')
+         );
+    } catch (error) {
+        throw new ApiError(error.statusCode, error.message);
+    }
+})

@@ -11,10 +11,12 @@ import {
 import UserModel from "../models/user.model.js"
 
 import { extractPublicId } from '../utils/ExtractPublicId.js';
+import AdminModel from '../models/admin.model.js';
 
 export const createBooks = AsyncHandler(async (req, res) => {
     const { title, description, oldPrice, newPrice, category, trending } =
         req.body;
+        const adminId = req.admin;
     if (!title || !description || !newPrice || !category) {
         throw new ApiError(400, 'All fileds are required');
     }
@@ -33,6 +35,10 @@ export const createBooks = AsyncHandler(async (req, res) => {
     }
 
     try {
+        const admin = await AdminModel.findById(adminId);
+        if (!admin) {
+            throw new ApiError(404, 'Admin not found');
+        }
         const book = await BookModel.create({
             title,
             description,
@@ -41,6 +47,7 @@ export const createBooks = AsyncHandler(async (req, res) => {
             trending: trending || false,
             category,
             coverImage: coverImage.secure_url,
+            author:admin.username
         });
 
         return res

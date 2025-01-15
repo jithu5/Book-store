@@ -1,11 +1,10 @@
 import React from "react";
 import "./App.css";
 import { Outlet } from "react-router-dom";
-import { NavBar, Footer } from "./components/index";
 
 import { ToastContainer, Zoom } from "react-toastify";
 import { useContext } from "react";
-import { AuthContext } from "./Context/AuthContext";
+import { AuthContext, AuthContextProvider } from "./Context/AuthContext";
 
 function App() {
   const {currentUser,loading} = useContext(AuthContext)
@@ -16,6 +15,8 @@ function App() {
 
   return (
     <>
+    <AuthContextProvider>
+
         <ToastContainer
           position="top-right"
           autoClose={3000}
@@ -29,11 +30,9 @@ function App() {
           theme="light"
           transition={Zoom} // Add zoom animation
         />
-        <NavBar />
-        <main className="max-w-screen-2xl mx-auto px-6 sm:px-8 md:px-14 py-6 min-h-screen font-primary">
-          <Outlet />
-        </main>
-        <Footer />
+        <Outlet/>
+       
+    </AuthContextProvider>
     </>
   );
 }

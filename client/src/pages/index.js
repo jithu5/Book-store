@@ -7,6 +7,8 @@ import SingleBook from "./books/SingleBook";
 import Adminlayout from "./Admin/Adminlayout";
 import AdminRegister from "./Admin/AdminRegister";
 import AdminLogin from "./Admin/AdminLogin";
+import AdminDashboard from "./Admin/AdminDashboard";
+import UserHomeLayout from "./Home/UserHomeLayout";
 
 export {
   Home,
@@ -18,4 +20,6 @@ export {
   Adminlayout,
   AdminRegister,
   AdminLogin,
+  UserHomeLayout,
+  AdminDashboard
 };

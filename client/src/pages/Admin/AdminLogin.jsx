@@ -1,6 +1,8 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useLoginAdminMutation } from "../../redux/features/users/adminApi.js";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const AdminLogin = () => {
   // Use React Hook Form
@@ -13,6 +15,8 @@ const AdminLogin = () => {
 
   const [loginAdmin] = useLoginAdminMutation();
 
+  const navigate = useNavigate()
+
   // Form submission handler
   const onSubmit = async (data) => {
     console.log(data);
@@ -23,7 +27,17 @@ const AdminLogin = () => {
     }
     console.log(dataTosend);
     // You can send the form data to an API or handle it here
-    await loginAdmin(data)
+    const response = await loginAdmin(data)
+    // console.log(response);
+    if (response) {
+      console.log("Login Successful");
+      // Reset the form after successful login
+      reset();
+      toast.success("Login Successful")
+      setTimeout(() => {
+        navigate("/api/auth/admin")
+      }, 600);
+    }
   };
 
   return (

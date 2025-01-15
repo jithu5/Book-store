@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { type } from 'os';
 
 const bookSchema = new mongoose.Schema(
     {
@@ -38,6 +39,9 @@ const bookSchema = new mongoose.Schema(
             required: true,
             trim: true,
         },
+        author:{
+            type:String
+        }
     },
     { timestamps: true }
 );
