@@ -42,7 +42,7 @@ const adminApi = createApi({
 
     getAdmin: builder.query({
       query: () => ({
-        url: "/",
+        url: "/book-users",
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -50,6 +50,16 @@ const adminApi = createApi({
       }),
       providesTags: ["Admin"],
     }),
+    getAdminBooks:builder.query({
+      query: () => ({
+        url: "/",
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      providesTags: ["Admin"],
+    })
   }),
 });
 
@@ -57,5 +67,6 @@ export const {
   useRegisterAdminMutation,
   useLoginAdminMutation,
   useGetAdminQuery,
+  useGetAdminBooksQuery
 } = adminApi;
 export default adminApi;

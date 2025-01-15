@@ -4,10 +4,12 @@ import cartReducer from "./features/cart/cartSlice.js";
 import  booksApi  from "./features/books/booksApi.js"; // Ensure correct import
 import userApi from "./features/users/usersApi.js";
 import adminApi from "./features/users/adminApi.js";
+import adminBookReducer from "./features/dashboard/dashboardSlice.js";
 
 const store = configureStore({
   reducer: {
     cart: cartReducer,
+    adminBook:adminBookReducer,
     [booksApi.reducerPath]: booksApi.reducer,
     [userApi.reducerPath] : userApi.reducer,
     [adminApi.reducerPath] : adminApi.reducer

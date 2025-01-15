@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { type } from 'os';
 
 const bookSchema = new mongoose.Schema(
     {
@@ -13,7 +12,7 @@ const bookSchema = new mongoose.Schema(
             required: true,
             trim: true,
             minlength: 10,
-            maxlength: 300,
+            maxlength: 800,
         },
         category: {
             type: String,

@@ -16,7 +16,9 @@ import AdminModel from '../models/admin.model.js';
 export const createBooks = AsyncHandler(async (req, res) => {
     const { title, description, oldPrice, newPrice, category, trending } =
         req.body;
-        const adminId = req.admin;
+    const adminId = req.admin;
+    console.log('Received Data:', req.body); // Logs the parsed text data
+    console.log('Received File:', req.file); // Logs the uploaded file details
     if (!title || !description || !newPrice || !category) {
         throw new ApiError(400, 'All fileds are required');
     }
@@ -47,7 +49,7 @@ export const createBooks = AsyncHandler(async (req, res) => {
             trending: trending || false,
             category,
             coverImage: coverImage.secure_url,
-            author:admin.username
+            author: admin.username,
         });
 
         return res
@@ -57,6 +59,7 @@ export const createBooks = AsyncHandler(async (req, res) => {
         if (fs.existsSync(coverImagePath)) {
             fs.unlinkSync(coverImagePath);
         }
+        console.log(error);
         throw new ApiError(error.statusCode, error.message);
     }
 });
@@ -157,11 +160,12 @@ export const deleteBook = AsyncHandler(async (req, res) => {
         }
         if (book.coverImage) {
             const publicId = extractPublicId(book.coverImage);
+            console.log(publicId);
             await deleteImageCloudinary(publicId);
         }
         const deletedBook  = await BookModel.findByIdAndDelete(bookId);
         return res.json(
-            new ApiResponse(200, deleteBook, 'Book deleted successfully')
+            new ApiResponse(200, deletedBook, 'Book deleted successfully')
         );
         
     } catch (error) {

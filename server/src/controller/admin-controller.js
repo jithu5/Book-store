@@ -84,7 +84,7 @@ export const loginAdmin = AsyncHandler(async (req, res) => {
     return res.json(new ApiResponse(200, 1, 'Admin logged out successfully'));
 })
 
-export const getAdminData = AsyncHandler(async(req,res)=>{
+export const getAdminBookAndClient = AsyncHandler(async(req,res)=>{
     const adminId = req.admin
     console.log("Admin id: " + adminId)
     try {
@@ -135,6 +135,7 @@ export const getAdminData = AsyncHandler(async(req,res)=>{
                      oldPrice: { $first: '$Books.oldPrice' },
                      users: { $addToSet: '$userData.username' },
                      trending: { $first: '$Books.trending' },
+                     coverImage: { $first: '$Books.coverImage' },
                      // Collect unique users who borrowed t
                  },
              },
@@ -148,6 +149,8 @@ export const getAdminData = AsyncHandler(async(req,res)=>{
                      oldPrice: 1,
                      trending: 1,
                      users: 1,
+                     coverImage: 1,
+                     // Create new fields for user count and average rating
                  },
              },
          ]);
@@ -157,5 +160,49 @@ export const getAdminData = AsyncHandler(async(req,res)=>{
          );
     } catch (error) {
         throw new ApiError(error.statusCode, error.message);
+    }
+})
+
+export const getAdminBooks = AsyncHandler(async(req, res)=>{
+    const adminId = req.admin
+    console.log("Admin id: " + adminId)
+    try {
+        const adminBooks = await AdminModel.aggregate([
+            {
+                $match: { _id: new mongoose.Types.ObjectId(String(adminId)) },
+            },
+            {
+                $lookup: {
+                    from: 'books',
+                    localField: 'username',
+                    foreignField: 'author',
+                    as: 'Books',
+                },
+            },
+            {
+                $unwind: '$Books',
+            },
+            {
+                $project:{
+                    title: "$Books.title",
+                    author: "$Books.author",
+                    description: "$Books.description",
+                    newPrice: '$Books.newPrice',
+                    oldPrice: "$Books.oldPrice",
+                    trending: "$Books.trending",
+                    coverImage: "$Books.coverImage",
+                    category: "$Books.category",
+                    _id: "$Books._id",
+                    // Create new fields for user count and average rating
+                }
+            }
+        ])
+        if (!adminBooks) {
+            throw new ApiError(404,"Admin books not found")
+        }
+        res.json(new ApiResponse(200,adminBooks,"Fetched admin books successfully"));
+    } catch (error) {
+        console.log(error);
+        throw new ApiError(error.statusCode,error.message);
     }
 })
