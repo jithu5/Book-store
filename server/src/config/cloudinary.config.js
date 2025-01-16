@@ -36,7 +36,7 @@ export async function uploadImageToCloudinary(filePath) {
 
 export async function deleteImageCloudinary(publicId) {
   try {
-    const result = await cloudinary.uploader.destroy(publicId);
+    const result = await cloudinary.uploader.destroy(`book_images/${publicId}`);
     console.log("Image deleted successfully from cloud",result);
     return result;
   } catch (error) {

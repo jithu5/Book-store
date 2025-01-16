@@ -1,10 +1,11 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useCreateBookMutation } from "../../redux/features/books/booksApi";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useGetAdminBooksQuery } from "../../redux/features/users/adminApi";
+import { useUpdateBookMutation } from "../../redux/features/books/booksApi";
 import { useDispatch } from "react-redux";
-import { addAdminBooks } from "../../redux/features/dashboard/dashboardSlice";
-import { useNavigate } from "react-router-dom";
+import { updateBooks } from "../../redux/features/dashboard/dashboardSlice";
 
 const categories = [
   "choose a genre",
@@ -14,23 +15,27 @@ const categories = [
   "adventure",
 ];
 
-const AddBooks = () => {
+function EditBook() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
   } = useForm();
 
-  const [createBook] = useCreateBookMutation()
+  const { data, isLoading, isError } = useGetAdminBooksQuery();
+  const [updateBook] = useUpdateBookMutation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { _id } = useParams();
 
-  const navigate = useNavigate()
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error loading books...</div>;
 
-  const dispatch = useDispatch()
+  const book = data?.data?.find((b) => b._id === _id);
 
   const onSubmit = async (data) => {
-    console.log("Form Data Submitted:", data);
-
+    // Prepare the form data (file + other fields)
     const formData = new FormData();
     formData.append("title", data.title);
     formData.append("description", data.description);
@@ -38,29 +43,34 @@ const AddBooks = () => {
     formData.append("newPrice", data.newPrice);
     formData.append("category", data.category);
     formData.append("trending", data.trending);
-    formData.append("coverImage", data.coverImage[0]); // File input
 
-    for (const pair of formData.entries()) {
-      console.log(`${pair[0]}: ${pair[1]}`);
+    // Append the file if present
+    if (data.coverImage[0]) {
+      formData.append("coverImage", data.coverImage[0]);
     }
-    // Handle the form submission logic (e.g., API call)
-    const response = await createBook(formData).unwrap();
-    console.log(response);
-    if (response) {
-        dispatch(addAdminBooks(response))
-        toast.success("Book created successfully")
-        setTimeout(() => {
-          navigate("/api/auth/admin")
-        }, 500)
-        
+
+    // Include the _id to identify which book to update
+    formData.append("_id", _id);
+
+    try {
+      const response = await updateBook(formData).unwrap();
+      console.log(response);
+      if (response) {
+        dispatch(updateBooks(response));
+        toast.success("Book updated successfully");
+        reset();
+        setTimeout(() => navigate("/api/auth/admin"), 500);
+      }
+    } catch (error) {
+      toast.error("Error in updating book");
+      console.error(error);
     }
-    reset();
   };
 
   return (
     <div className="max-w-[90vw] sm:max-w-[70vw] md:w-[60vw] mx-auto p-6 bg-white shadow rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Add Book</h2>
-      <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data" >
+      <h2 className="text-2xl font-bold mb-4">Edit Book</h2>
+      <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
         {/* Title */}
         <div className="mb-4">
           <label htmlFor="title" className="block font-medium mb-1">
@@ -69,6 +79,7 @@ const AddBooks = () => {
           <input
             {...register("title", { required: "Title is required" })}
             type="text"
+            defaultValue={book.title}
             className="w-full border rounded px-3 py-2"
           />
           {errors.title && (
@@ -86,6 +97,7 @@ const AddBooks = () => {
               required: "Description is required",
             })}
             rows="3"
+            defaultValue={book.description}
             className="w-full border rounded px-3 py-2"
           ></textarea>
           {errors.description && (
@@ -104,6 +116,7 @@ const AddBooks = () => {
               validate: (value) =>
                 value !== "choose a genre" || "Please select a valid category",
             })}
+            defaultValue={book.category}
             className="w-full border rounded px-3 py-2"
           >
             {categories.map((category, index) => (
@@ -129,6 +142,7 @@ const AddBooks = () => {
               validate: (value) => value > 0 || "Old price must be positive",
             })}
             type="number"
+            defaultValue={book.oldPrice}
             className="w-full border rounded px-3 py-2"
           />
           {errors.oldPrice && (
@@ -148,6 +162,7 @@ const AddBooks = () => {
               validate: (value) => value > 0 || "New price must be positive",
             })}
             type="number"
+            defaultValue={book.newPrice}
             className="w-full border rounded px-3 py-2"
           />
           {errors.newPrice && (
@@ -160,11 +175,7 @@ const AddBooks = () => {
           <label htmlFor="coverImage" className="block font-medium mb-1">
             Cover Image
           </label>
-          <input
-            {...register("coverImage", { required: "Cover image is required" })}
-            type="file"
-            className="w-full"
-          />
+          <input {...register("coverImage")} type="file" className="w-full" />
           {errors.coverImage && (
             <p className="text-red-500 text-sm">{errors.coverImage.message}</p>
           )}
@@ -175,20 +186,25 @@ const AddBooks = () => {
           <label htmlFor="trending" className="block font-medium mb-1">
             Trending
           </label>
-          <input {...register("trending")} type="checkbox" className="mr-2" />
+          <input
+            {...register("trending")}
+            type="checkbox"
+            className="mr-2"
+            defaultChecked={book.trending}
+          />
           Trending
         </div>
 
         {/* Submit Button */}
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="bg-purple-500 text-white px-4 py-2 rounded"
         >
-          Add Book
+          Update
         </button>
       </form>
     </div>
   );
-};
+}
 
-export default AddBooks;
+export default EditBook;

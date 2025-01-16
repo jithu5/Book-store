@@ -12,6 +12,7 @@ import UserModel from "../models/user.model.js"
 
 import { extractPublicId } from '../utils/ExtractPublicId.js';
 import AdminModel from '../models/admin.model.js';
+import mongoose from 'mongoose';
 
 export const createBooks = AsyncHandler(async (req, res) => {
     const { title, description, oldPrice, newPrice, category, trending } =
@@ -82,6 +83,7 @@ export const getBooks = AsyncHandler(async (req, res) => {
 
 export const getBookById = AsyncHandler(async (req, res) => {
     const { bookId } = req.params;
+    console.log(req.params)
 
     try {
         const book = await BookModel.findById(bookId);
@@ -100,11 +102,18 @@ export const getBookById = AsyncHandler(async (req, res) => {
 
 export const updateBook = AsyncHandler(async (req, res) => {
     const { bookId } = req.params;
+    const id = req.params.bookId;
+// for (let [key, value] of formData.entries()) {
+//     console.log(`key ${key} and value ${value}`);
+// }
+
+    console.log("params",req.params);
+    console.log("body",req.body)
     const { title, description, oldPrice, newPrice, category, trending } =
         req.body;
 
     try {
-        let book = await BookModel.findById(bookId);
+        const book = await BookModel.findById(bookId);
 
         if (!book) {
             throw new ApiError(404, 'Book not found');
@@ -129,7 +138,7 @@ export const updateBook = AsyncHandler(async (req, res) => {
             newCoverImageUrl = uploadResponse.secure_url;
         }
 
-        book = await BookModel.findByIdAndUpdate(
+        const updatedBook = await BookModel.findByIdAndUpdate(
             bookId,
             {
                 title,
@@ -144,9 +153,10 @@ export const updateBook = AsyncHandler(async (req, res) => {
         );
 
         return res.json(
-            new ApiResponse(200, book, 'Book updated successfully')
+            new ApiResponse(200, updatedBook, 'Book updated successfully')
         );
     } catch (error) {
+        console.log(error)
         throw new ApiError(error.statusCode, error.message);
     }
 });
@@ -160,7 +170,7 @@ export const deleteBook = AsyncHandler(async (req, res) => {
         }
         if (book.coverImage) {
             const publicId = extractPublicId(book.coverImage);
-            console.log(publicId);
+            console.log("public id of image " + publicId);
             await deleteImageCloudinary(publicId);
         }
         const deletedBook  = await BookModel.findByIdAndDelete(bookId);

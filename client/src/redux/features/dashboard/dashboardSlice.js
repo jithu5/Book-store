@@ -17,10 +17,18 @@ const adminBookSlice = createSlice({
         deleteAdminBooks:(state, action) => {
             state.adminBooks = state.adminBooks.filter(book => book._id!== action.payload);
         },
+        updateBooks:(state, action) => {
+            // state.adminBooks = state.adminBooks.map(book => book._id === action.payload._id? action.payload : book);
+            const index = state.adminBooks.findIndex(book => book._id === action.payload._id);
+            console.log(index)
+            if(index !== -1) {
+                state.adminBooks[index] = action.payload;
+            }
+        }
     },
     
 })
 
-export const {setAdminBooks,addAdminBooks,deleteAdminBooks} = adminBookSlice.actions;
+export const {setAdminBooks,addAdminBooks,deleteAdminBooks,updateBooks} = adminBookSlice.actions;
 
 export default adminBookSlice.reducer;

@@ -3,9 +3,10 @@ import Footer from "./Footer";
 import ProtectedRoute from "./ProtectedRoute";
 import SideBar from "./Admin/SideBar";
 import Header from "./Admin/Header";
-import Dashboard from "./Admin/Dashboard";
+import SalesDetails from "./Admin/SalesDetails";
 import AddBooks from "./Admin/AddBooks";
 import BookList from "./Admin/BookList";
+import EditBook from "./Admin/EditBook";
 
 
 export {
@@ -14,7 +15,8 @@ export {
     ProtectedRoute,
     SideBar,
     Header,
-    Dashboard,
+    SalesDetails,
     AddBooks,
-    BookList
+    BookList,
+    EditBook
 }

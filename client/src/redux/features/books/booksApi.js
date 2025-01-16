@@ -3,14 +3,14 @@ import { getBaseUrl } from "../../../utils/getBaseUrl";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: `${getBaseUrl()}/api/books`,
-  Credential: "include",
-  prepareHeaders: (Headers) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      Headers.set("Authorization", `Bearer ${token}`);
-    }
-    return Headers;
-  },
+  credentials: "include",
+  // prepareHeaders: (Headers) => {
+  //   const token = localStorage.getItem("token");
+  //   if (token) {
+  //     Headers.set("Authorization", `Bearer ${token}`);
+  //   }
+  //   return Headers;
+  // },
 });
 const booksApi = createApi({
   reducerPath: "booksApi",
@@ -23,6 +23,7 @@ const booksApi = createApi({
     }),
     fetchBookById: builder.query({
       query: (bookId) => `/${bookId}`,
+      credentials: "include",
       providesTags: (result, error, bookId) => [{ type: "Books", bookId }],
     }),
     createBook: builder.mutation({
@@ -31,26 +32,36 @@ const booksApi = createApi({
         method: "POST",
         body: newBook,
         credentials: "include",
-        
       }),
-      transformResponse:(response)=>{
+      transformResponse: (response) => {
         return response.data;
       },
       invalidatesTags: ["Books"],
     }),
     updateBook: builder.mutation({
-      query: (updatedBook) => ({
-        url: `/edit/${updatedBook._id}`,
-        method: "PUT",
-        body: JSON.stringify(updatedBook),
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }),
-      invalidatesTags: (result, error, updatedBook) => [
-        { type: "Books", bookId: updatedBook._id },
-      ],
+      query: (updatedBook) => {
+        console.log(updatedBook instanceof FormData);
+        const bookId =
+          updatedBook instanceof FormData
+            ? updatedBook.get("_id")
+            : updatedBook._id;
+        return {
+          url: `/edit/${bookId}`,
+          method: "PUT",
+          body: updatedBook,
+          credentials: "include",
+        };
+      },
+      invalidatesTags: (result, error, updatedBook) => {
+        const bookId =
+          updatedBook instanceof FormData
+            ? updatedBook.get("bookId")
+            : updatedBook.bookId;
+        return [{ type: "Books", bookId }];
+      },
+      transformResponse: (response) => {
+        return response.data;
+      },
     }),
     deleteBook: builder.mutation({
       query: (bookId) => ({
@@ -59,9 +70,9 @@ const booksApi = createApi({
         credentials: "include",
       }),
       invalidatesTags: ["Books"],
-      transformResponse:(response) =>{
+      transformResponse: (response) => {
         return response.data;
-      }
+      },
     }),
     addToCartDb: builder.mutation({
       query: (bookId) => ({
@@ -93,7 +104,7 @@ export const {
   useUpdateBookMutation,
   useDeleteBookMutation,
   useAddToCartDbMutation,
-  useRemoveFromCartDbMutation
+  useRemoveFromCartDbMutation,
 } = booksApi;
 
 export default booksApi;

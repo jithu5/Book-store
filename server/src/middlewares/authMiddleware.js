@@ -4,7 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 const authMiddleware = (req, res, next) => {
     try {
         const token = req.cookies.token;
-        console.log("token in cookie", token);
+        console.log("token in cookie", req.cookies);
 
         if (!token) {
             throw new ApiError(401, "No token provided");
@@ -14,7 +14,6 @@ const authMiddleware = (req, res, next) => {
         if (!decoded) {
             throw new ApiError(403, "Unauthorized access");
         }
-        console.log(decoded);
         req.user = decoded.id;
         next();
     } catch (error) {

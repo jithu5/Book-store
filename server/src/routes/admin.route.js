@@ -1,5 +1,5 @@
 import express from 'express';
-import { createAdmin, getAdminBookAndClient, getAdminBooks, loginAdmin } from '../controller/admin-controller.js';
+import { createAdmin, getAdmin, getAdminBookAndClient, getAdminBooks, loginAdmin } from '../controller/admin-controller.js';
 import adminAuthMiddleware from '../middlewares/adminAuth.middleware.js';
 const AdminRouter = express.Router();
 
@@ -9,6 +9,8 @@ AdminRouter.post("/login",loginAdmin)
 
 AdminRouter.get("/book-users",adminAuthMiddleware,getAdminBookAndClient)
 
-AdminRouter.get("/",adminAuthMiddleware,getAdminBooks)
+AdminRouter.get("/books",adminAuthMiddleware,getAdminBooks)
+
+AdminRouter.get("/",adminAuthMiddleware,getAdmin)
 
 export default AdminRouter;

@@ -1,12 +1,19 @@
-import React from 'react'
-import { useGetAdminQuery } from '../../redux/features/users/adminApi';
+import React, { useContext } from 'react'
+import { AdminAuthContext } from '../../Context/AdminAuthContext';
 
-function Header({data}) {
+function Header({ setOpenSideBar }) {
+  const { currentAdmin, loading } = useContext(AdminAuthContext);
+
+  if (loading) {
+    return <p>loading..</p>;
+  }
 
   return (
     <>
       <header className="flex items-center h-20 px-6 sm:px-10 bg-white">
-        <button className="block sm:hidden relative flex-shrink-0 p-2 mr-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800 focus:bg-gray-100 focus:text-gray-800 rounded-full">
+        <button
+        onClick={()=>setOpenSideBar(prev=>!prev)}
+         className="block fixed top-5 left-4 z-20 sm:hidden flex-shrink-0 p-2 mr-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800 focus:bg-gray-100 focus:text-gray-800 rounded-full">
           <span className="sr-only">Menu</span>
           <svg
             aria-hidden="true"
@@ -23,7 +30,7 @@ function Header({data}) {
             />
           </svg>
         </button>
-        <div className="relative w-full max-w-md sm:-ml-2">
+        <div className="relative w-full max-w-md ml-20">
           <svg
             aria-hidden="true"
             viewBox="0 0 20 20"
@@ -49,11 +56,11 @@ function Header({data}) {
             <div className="relative group">
               <span className="h-12 w-12 ml-2 sm:ml-3 mr-2 bg-gray-100 rounded-full overflow-hidden flex justify-center items-center">
                 <span className="text-lg uppercase font-semibold">
-                  {data[0]?.authorName[0]}
+                  {currentAdmin.username[0]}
                 </span>
               </span>
               <div className="hidden absolute left-0 group-hover:flex md:flex-col md:items-end md:leading-tight">
-                <span className="font-semibold">{data[0]?.authorName}</span>
+                <span className="font-semibold">{currentAdmin.username}</span>
                 <span className="text-sm text-gray-600">Lecturer</span>
               </div>
             </div>

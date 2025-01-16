@@ -15,10 +15,15 @@ bookRoute.get("/",getBooks)
 
 // get book by bookId
 
-bookRoute.get('/:bookId', getBookById);
+bookRoute.get('/:bookId',authMiddleware, getBookById);
 
 // update book
-bookRoute.put("/edit/:bookId",adminAuthMiddleware,updateBook)
+bookRoute.put(
+    '/edit/:bookId',
+    adminAuthMiddleware,
+    upload.single('coverImage'),
+    updateBook
+);
 
 // delete book
 bookRoute.delete("/delete/:bookId",adminAuthMiddleware,deleteBook)

@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
 import { Home, Login, Register,CartPage, CheckoutPage,SingleBook,Adminlayout,AdminRegister, AdminLogin,AdminDashboard, UserHomeLayout } from "../pages/index";
-import {ProtectedRoute} from "../components/index.js"
+import {ProtectedRoute,BookList, AddBooks, SalesDetails, EditBook} from "../components/index.js"
 
 // Define your routes here
 const router = createBrowserRouter([
@@ -60,8 +60,26 @@ const router = createBrowserRouter([
     element: <Adminlayout />,
     children: [
       {
-        index:true,
-         element:<AdminDashboard/>
+        path: "",
+        element: <AdminDashboard />,
+        children: [
+          {
+            index: true,
+            element: <BookList />,
+          },
+          {
+            path: "add-book",
+            element: <AddBooks />,
+          },
+          {
+            path: "sales",
+            element: <SalesDetails />,
+          },
+          {
+            path: "edit-book/:_id",
+            element: <EditBook />,
+          },
+        ],
       },
       {
         path: "register",

@@ -206,3 +206,17 @@ export const getAdminBooks = AsyncHandler(async(req, res)=>{
         throw new ApiError(error.statusCode,error.message);
     }
 })
+
+export const getAdmin = AsyncHandler(async(req, res)=>{
+    const adminId = req.admin
+    try {
+        const admin = await AdminModel.findById(adminId)
+        if (!admin) {
+            throw new ApiError(404,"Admin not found")
+        }
+        res.json(new ApiResponse(200,admin,"Fetched admin successfully"));
+    } catch (error) {
+        console.log(error);
+        throw new ApiError(error.statusCode,error.message);
+    }
+})
