@@ -17,8 +17,20 @@ export const signUp = AsyncHandler(async (req, res) => {
         }
         const newUser = await UserModel.create({username, email});
         console.log("User created successfully", newUser);
+         const token = await newUser.generateAccessToken();
+         if (!token) {
+             throw new ApiError(401, 'Cannot create token');
+         }
 
-        return res.status(200).json(new ApiResponse(200,newUser,"User created successfully"));
+        return res
+            .status(200)
+            .cookie('token', token, {
+                expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 hour
+                httpOnly: true,
+                secure: false, // set to true for HTTPS only
+                sameSite: 'lax', // Options: 'strict', 'lax', 'none'
+            })
+            .json(new ApiResponse(200, newUser, 'User created successfully'));
     } catch (error) {
         throw new ApiError(error.statusCode, error.message)
     }
