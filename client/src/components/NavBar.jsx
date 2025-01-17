@@ -14,7 +14,7 @@ import {
   useGetCartBooksDbQuery,
   useLogoutUserDbMutation,
 } from "../redux/features/users/usersApi";
-import { setCart } from "../redux/features/cart/cartSlice";
+import { clearCart, setCart } from "../redux/features/cart/cartSlice";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard" },
@@ -28,10 +28,7 @@ function NavBar() {
   const { currentUser, signOutUser } = useContext(AuthContext);
   const cartitems = useSelector((state) => state.cart.cartitems);
   const [cartItemCount, setCartItemCount] = useState(0);
-  const { data ,isSuccess} = useGetCartBooksDbQuery(undefined, {
-    refetchOnMountOrArgChange: false,
-    staleTime: 0,
-  });
+  const { data, isSuccess,isLoading } = useGetCartBooksDbQuery();
 
   const [logoutUserDb] = useLogoutUserDbMutation();
 
@@ -39,41 +36,56 @@ function NavBar() {
 
   const navigate = useNavigate();
 
+  console.log(cartitems.length);
+
   const handleSignout = async () => {
     signOutUser();
     const res = await logoutUserDb();
     if (res) {
-      setTimeout(() => {
-        navigate("/login");
-      }, 500);
+      // Clear cart before logging out
+      dispatch(clearCart());
+      navigate("/login");
     }
   };
 
   useEffect(() => {
+    if (data?.data && !isLoading) {
+      console.log("running");
+      if (cartitems.length === 0) {
+        console.log("setting");
+        console.log(data?.data);
+        dispatch(setCart(data.data));
+      }
+    }
+  }, [data,isLoading]);
+
+  useEffect(() => {
     if (cartitems.length > 0) {
+      console.log("original lenth");
       setCartItemCount(cartitems.length);
     } else {
+      console.log("length zero");
       setCartItemCount(0);
     }
   }, [cartitems]);
-  
-  useEffect(() => {
-    if (data && isSuccess) {
-      console.log("running")
-      dispatch(setCart(data.data));
-    }
-  }, [data,isSuccess,dispatch]);
-  console.log(cartitems);
 
-  useEffect(() => {
-    const handleOutsideClick = (e) => {
-      if (isDropDown && !e.target.closest(".dropdown")) {
-        setIsDropDown(false);
-      }
-    };
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => document.removeEventListener("mousedown", handleOutsideClick);
-  }, [isDropDown]);
+  //  useEffect(() => {
+  //    if (data && isSuccess) {
+  //      console.log("running");
+  //      dispatch(setCart(data.data));
+  //    }
+  //  }, [data, isSuccess, dispatch]);
+  //  console.log(cartitems);
+
+  // useEffect(() => {
+  //   const handleOutsideClick = (e) => {
+  //     if (isDropDown && !e.target.closest(".dropdown")) {
+  //       setIsDropDown(false);
+  //     }
+  //   };
+  //   document.addEventListener("mousedown", handleOutsideClick);
+  //   return () => document.removeEventListener("mousedown", handleOutsideClick);
+  // }, [isDropDown]);
 
   return (
     <header className="max-w-screen-2xl mx-auto px-6 sm:px-8 md:px-14 py-3">

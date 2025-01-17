@@ -4,7 +4,7 @@ import { FiShoppingCart } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../redux/features/cart/cartSlice";
-import { useAddToCartDbMutation } from "../../redux/features/books/booksApi";
+import { useAddToCartDbMutation } from "../../redux/features/users/usersApi.js";
 
 import Swal from "sweetalert2";
 import { AuthContext } from "../../Context/AuthContext";

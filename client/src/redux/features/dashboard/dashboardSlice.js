@@ -24,11 +24,14 @@ const adminBookSlice = createSlice({
             if(index !== -1) {
                 state.adminBooks[index] = action.payload;
             }
-        }
+        },
+        clearBooksInAdmin:(state, action) => {
+            state.adminBooks = [];
+        },
     },
     
 })
 
-export const {setAdminBooks,addAdminBooks,deleteAdminBooks,updateBooks} = adminBookSlice.actions;
+export const {setAdminBooks,addAdminBooks,deleteAdminBooks,updateBooks,clearBooksInAdmin} = adminBookSlice.actions;
 
 export default adminBookSlice.reducer;

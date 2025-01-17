@@ -11,13 +11,18 @@ import { Link } from "react-router-dom";
 
 const CartPage = () => {
   const dispatch = useDispatch();
-  const { data, isLoading, error, isSuccess } = useGetCartBooksDbQuery(
-    undefined,
-    { refetchOnMountOrArgChange: false } // Ensure fresh fetch
-  );
+  const { data, isLoading, error, isSuccess,refetch } = useGetCartBooksDbQuery(undefined,
+    {refetchOnMountOrArgChanges: true})
+  
   const cartItems = useSelector((state) => state.cart.cartitems);
 
   const [removeFromCartDb] = useRemoveFromCartDbMutation();
+  console.log(cartItems)
+
+  useEffect(()=>{
+    console.log("running in cart page")
+    refetch()
+  },[])
 
   // Synchronize Redux state with backend data
   // useEffect(() => {
@@ -28,17 +33,17 @@ const CartPage = () => {
   //     dispatch(setCart(data.data)); // Update Redux state
   //   }
   // }, [data, isSuccess]);
-  useEffect(() => {
-    if (isSuccess && data?.data?.length > 0) {
-      console.log("inside data");
-      if (cartItems.length === 0) {
-        console.log("inside cartItems");
+    useEffect(() => {
+      if (isSuccess && data?.data?.length > 0) {
+        console.log("inside data");
+        if (cartItems.length === 0) {
+          console.log("inside cartItems");
 
-        console.log("running in cart page");
-        dispatch(setCart(data.data)); // Update Redux state
+          console.log("running in cart page");
+          dispatch(setCart(data.data)); // Update Redux state
+        }
       }
-    }
-  }, [data]);
+    }, [data]);
 
   if (isLoading) {
     return <p className="text-center mt-6">Loading...</p>;
@@ -51,10 +56,8 @@ const CartPage = () => {
     }
 
     try {
-      // Optimistically remove the item from Redux state
       dispatch(removeFromCart(id));
 
-      // Trigger backend mutation
       await removeFromCartDb(id);
     } catch (err) {
       console.error("Failed to remove item:", err);
@@ -72,9 +75,10 @@ const CartPage = () => {
   const total = cartItems.reduce((total, item) => total + item.newPrice, 0);
 
   if (error) {
+    console.log(JSON.stringify(error));
     return (
       <p className="text-center mt-6 text-red-500">
-        Failed to load cart: {error.message}
+        Failed to load cart: {JSON.stringify(error.message)}
       </p>
     );
   }

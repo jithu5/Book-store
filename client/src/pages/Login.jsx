@@ -6,11 +6,14 @@ import { toast, ToastContainer, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthContext } from "../Context/AuthContext";
 import { useLoginUserDbMutation } from "../redux/features/users/usersApi";
+import { useDispatch } from "react-redux";
+import { clearCart } from "../redux/features/cart/cartSlice";
 
 function Login() {
   const { loginUser, signInUsingGoogle } = useContext(AuthContext);
 
   const [loginUserDb] = useLoginUserDbMutation();
+  const dispatch = useDispatch()
 
   const navigate = useNavigate();
   const {
@@ -27,6 +30,7 @@ function Login() {
       const response = await loginUserDb({email: user.email});
       console.log(response);
       if (response) {
+        dispatch(clearCart())
         toast.success("Login Successful", { position: "top-right" });
         setTimeout(() => {
           navigate("/");

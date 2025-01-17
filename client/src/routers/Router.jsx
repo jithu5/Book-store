@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
-import { Home, Login, Register,CartPage, CheckoutPage,SingleBook,Adminlayout,AdminRegister, AdminLogin,AdminDashboard, UserHomeLayout } from "../pages/index";
+import { Home, Login, Register,CartPage, CheckoutPage,SingleBook,Adminlayout,AdminRegister, AdminLogin,AdminDashboard, UserHomeLayout, AdminProfile } from "../pages/index";
 import {ProtectedRoute,BookList, AddBooks, SalesDetails, EditBook} from "../components/index.js"
 
 // Define your routes here
@@ -42,15 +42,15 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             ),
           },
-          {
-            path: "login",
-            element: <Login />,
-          },
-          {
-            path: "register",
-            element: <Register />,
-          },
         ],
+      },
+      {
+        path: "login",
+        element: <Login />,
+      },
+      {
+        path: "register",
+        element: <Register />,
       },
     ],
   },
@@ -88,6 +88,10 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: <AdminLogin />,
+      },
+      {
+        path: "profile",
+        element: <AdminProfile />,
       },
     ],
   },

@@ -74,18 +74,6 @@ const booksApi = createApi({
         return response.data;
       },
     }),
-    addToCartDb: builder.mutation({
-      query: (bookId) => ({
-        url: `/add-cart/${bookId}`,
-        method: "POST",
-        credentials: "include",
-      }),
-      transformResponse: (response) => {
-        console.log(response.data);
-        return response.data;
-      },
-      invalidatesTags: ["Cart", "Users"],
-    }),
     removeFromCartDb: builder.mutation({
       query: (bookId) => ({
         url: `/remove-cart/${bookId}`,
@@ -103,7 +91,6 @@ export const {
   useCreateBookMutation,
   useUpdateBookMutation,
   useDeleteBookMutation,
-  useAddToCartDbMutation,
   useRemoveFromCartDbMutation,
 } = booksApi;
 

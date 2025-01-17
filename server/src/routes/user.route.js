@@ -1,5 +1,5 @@
 import express from 'express';
-import { getCartBooks, Login, Logout, signUp } from '../controller/user-controller.js';
+import { getCartBooks, Login, Logout, signUp,addToCart } from '../controller/user-controller.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 
 const userRouter = express.Router();
@@ -12,6 +12,8 @@ userRouter.post('/register',signUp)
 userRouter.post('/login',Login)
 
 userRouter.post('/logout',authMiddleware,Logout)
+
+userRouter.post('/add-cart/:bookId', authMiddleware, addToCart);
 
 
 export default userRouter;

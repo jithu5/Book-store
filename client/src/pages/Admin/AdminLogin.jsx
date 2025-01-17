@@ -28,8 +28,9 @@ const AdminLogin = () => {
     console.log(dataTosend);
     // You can send the form data to an API or handle it here
     const response = await loginAdmin(data)
+    console.log(response);
     // console.log(response);
-    if (response) {
+    if (response.data) {
       console.log("Login Successful");
       // Reset the form after successful login
       reset();
@@ -37,6 +38,8 @@ const AdminLogin = () => {
       setTimeout(() => {
         navigate("/api/auth/admin")
       }, 600);
+    }else{
+      toast.error("Invalid credentials")
     }
   };
 

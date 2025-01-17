@@ -8,7 +8,7 @@ const adminApi = createApi({
     baseUrl: `${getBaseUrl()}/api/admin`,
     credentials: "include",
   }),
-  tagTypes: ["Admin"],
+  tagTypes: ["Admin","Books"],
   endpoints: (builder) => ({
     registerAdmin: builder.mutation({
       query: (newAdmin) => ({
@@ -20,9 +20,9 @@ const adminApi = createApi({
         },
       }),
       transformResponse: (response, meta, arg) => {
-        return response.data;
+        return response;
       },
-      invalidatesTags: ["Admin"],
+      invalidatesTags: ["Admin","Books"],
     }),
     loginAdmin: builder.mutation({
       query: (data) => ({
@@ -35,9 +35,9 @@ const adminApi = createApi({
       }),
       transformResponse: (response, meta, arg) => {
         // ...
-        return response.data;
+        return response;
       },
-      invalidatesTags: ["Admin"],
+      invalidatesTags: ["Admin","Books"],
     }),
 
     getAdminBooksAndUsers: builder.query({
@@ -48,7 +48,7 @@ const adminApi = createApi({
           "Content-Type": "application/json",
         },
       }),
-      providesTags: ["Admin"],
+      providesTags: ["Books"],
     }),
     getAdminBooks:builder.query({
       query: () => ({
@@ -58,7 +58,7 @@ const adminApi = createApi({
           "Content-Type": "application/json",
         },
       }),
-      providesTags: ["Admin"],
+      providesTags: ["Books"],
     }),
     getAdmin:builder.query({
       query: () => ({
@@ -69,7 +69,18 @@ const adminApi = createApi({
         },
       }),
       providesTags: ["Admin"],
-    })
+    }),
+    lgoutAdmin:builder.mutation({
+      query:()=>({
+        url:"logout",
+        method:"POST",
+        credentials:"include",
+        transformResponse:(response,meta,arg)=>{
+          return response.data;
+        },
+        invalidatesTags:["Admin"]
+      })
+    }),
   }),
 });
 
@@ -78,6 +89,7 @@ export const {
   useLoginAdminMutation,
   useGetAdminBooksAndUsersQuery,
   useGetAdminBooksQuery,
-  useGetAdminQuery
+  useGetAdminQuery,
+  useLgoutAdminMutation
 } = adminApi;
 export default adminApi;

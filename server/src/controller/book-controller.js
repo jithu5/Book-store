@@ -183,41 +183,7 @@ export const deleteBook = AsyncHandler(async (req, res) => {
     }
 });
 
-export const addToCart = AsyncHandler(
-    async (req, res) => {
-        const { bookId } = req.params;
-        const userId  = req.user;
-        console.log(bookId, userId);
-        try {
-            const book = await BookModel.findById(bookId);
-            if (!book) {
-                throw new ApiError(404, 'Book not found');
-            }
-            const cartExistsForUser = await CartModel.findOne({
-                $and: [
-                    { userId: userId }, // Replace 'userId' with the actual user ID value or variable
-                    { bookId: bookId }, // Replace 'bookId' with the actual book ID value or variable
-                ],
-            });
-            console.log('exists for user',cartExistsForUser);
 
-            if (cartExistsForUser) {
-                throw new ApiError(400, 'Book already in cart');
-            }
-            const newCart = await CartModel.create({
-                userId,
-                bookId,
-                totalAmount: book.newPrice,
-            });
-
-            return res.status(201).json(
-                new ApiResponse(201, newCart, 'Book added to cart successfully')
-            );
-        } catch (error) {
-            throw new ApiError(error.statusCode, error.message)
-        }
-    }
-)
 
 export const deleteCartitem = AsyncHandler(
     async (req, res) => {

@@ -14,8 +14,8 @@ const BookList = () => {
 
   const {
     data: fetchedData,
-    isLoading,
     isSuccess,
+    isLoading
   } = useGetAdminBooksQuery(undefined, {
     refetchOnMountOrArgChange: false,
   });
@@ -33,6 +33,7 @@ const BookList = () => {
     }
   }, [fetchedData]);
   if (isLoading) return <p>Loading...</p>;
+ 
   console.log(fetchedData.data)
   console.log(adminBooks);
 
@@ -102,7 +103,7 @@ const BookList = () => {
               {trendingBookCount}
             </span>
             <span className="inline-block text-xl text-gray-500 font-semibold">
-              ({trendingpercentage.toFixed(2)}%)
+              ({isNaN(trendingpercentage) ? 0 : trendingpercentage.toFixed(2)}%)
             </span>
             <span className="block text-gray-500">
               Trending Books in This Month
@@ -112,6 +113,11 @@ const BookList = () => {
       </div>
 
       <div className="w-full flex flex-col gap-2">
+        {adminBooks.length === 0 && (
+          <h1 className="text-3xl font-bold text-center">No Books Exists</h1>
+        )}
+
+        {/* Book List */}
         {adminBooks.map((book) => (
           <div
             key={book._id}

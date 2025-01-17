@@ -1,19 +1,40 @@
-import React, { useContext } from 'react'
-import { AdminAuthContext } from '../../Context/AdminAuthContext';
+import React, { useContext } from "react";
+import { AdminAuthContext } from "../../Context/AdminAuthContext";
+import { useLgoutAdminMutation } from "../../redux/features/users/adminApi";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { clearBooksInAdmin } from "../../redux/features/dashboard/dashboardSlice";
 
 function Header({ setOpenSideBar }) {
   const { currentAdmin, loading } = useContext(AdminAuthContext);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [logoutAdmin] = useLgoutAdminMutation();
 
   if (loading) {
     return <p>loading..</p>;
   }
 
+  const handleLogout = async () => {
+    const response = await logoutAdmin();
+    if (response) {
+      dispatch(clearBooksInAdmin());
+      toast.success("Admin has been logged out successfully");
+      setTimeout(() => {
+        navigate("/api/auth/admin/login");
+      }, 300);
+    }
+  };
+
   return (
     <>
       <header className="flex items-center h-20 px-6 sm:px-10 bg-white">
         <button
-        onClick={()=>setOpenSideBar(prev=>!prev)}
-         className="block fixed top-5 left-4 z-20 sm:hidden flex-shrink-0 p-2 mr-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800 focus:bg-gray-100 focus:text-gray-800 rounded-full">
+          onClick={() => setOpenSideBar((prev) => !prev)}
+          className="block fixed top-5 left-4 z-20 sm:hidden flex-shrink-0 p-2 mr-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800 focus:bg-gray-100 focus:text-gray-800 rounded-full"
+        >
           <span className="sr-only">Menu</span>
           <svg
             aria-hidden="true"
@@ -51,20 +72,27 @@ function Header({ setOpenSideBar }) {
           />
         </div>
         <div className="flex flex-shrink-0 items-center ml-auto">
-            
-            <div className="relative group h-fit w-fit p-0  cursor-pointer">
-              <span className="h-12 w-12  bg-gray-100 rounded-full overflow-hidden flex justify-center items-center group-hover:bg-stone-300">
-                <span className="text-lg uppercase font-semibold">
-                  {currentAdmin.username[0]}
-                </span>
+          <div className="relative group h-fit w-fit p-0  cursor-pointer">
+            <span className="h-12 w-12  bg-gray-100 rounded-full overflow-hidden flex justify-center items-center group-hover:bg-stone-300">
+              <span className="text-lg uppercase font-semibold">
+                {currentAdmin.username[0]}
               </span>
-              <div className="hidden absolute top-[103%] left-0 group-hover:flex flex-col gap-5 bg-stone-700 text-white rounded-md py-4 px-6">
-                <span className="font-semibold hover:text-blue-500">{currentAdmin.username}</span>
-                <span className="text-sm hover:text-blue-500">Lecturer</span>
-              </div>
+            </span>
+            <div className="hidden absolute top-[103%] left-0 group-hover:flex flex-col gap-5 bg-stone-700 text-white rounded-md py-4 px-6">
+              <span
+                onClick={() => navigate("/api/auth/admin/profile")}
+                className="font-semibold hover:text-blue-500"
+              >
+                {currentAdmin.username}
+              </span>
+              <span className="text-sm hover:text-blue-500">Lecturer</span>
             </div>
+          </div>
           <div className="border-l pl-3 ml-3 space-x-1">
-            <button className="relative p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:bg-gray-100 focus:text-gray-600 rounded-full">
+            <button
+              onClick={handleLogout}
+              className="relative p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:bg-gray-100 focus:text-gray-600 rounded-full"
+            >
               <span className="sr-only">Log out</span>
               <svg
                 aria-hidden="true"
@@ -88,4 +116,4 @@ function Header({ setOpenSideBar }) {
   );
 }
 
-export default Header
+export default Header;

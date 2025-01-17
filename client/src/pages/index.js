@@ -9,6 +9,7 @@ import AdminRegister from "./Admin/AdminRegister";
 import AdminLogin from "./Admin/AdminLogin";
 import AdminDashboard from "./Admin/AdminDashboard";
 import UserHomeLayout from "./Home/UserHomeLayout";
+import AdminProfile from "./Admin/Adminprofile";
 
 export {
   Home,
@@ -21,5 +22,6 @@ export {
   AdminRegister,
   AdminLogin,
   UserHomeLayout,
-  AdminDashboard
+  AdminDashboard,
+  AdminProfile
 };

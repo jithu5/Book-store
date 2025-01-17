@@ -1,5 +1,8 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import { useRegisterAdminMutation } from "../../redux/features/users/adminApi";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const AdminRegister = () => {
   // Use React Hook Form
@@ -7,12 +10,26 @@ const AdminRegister = () => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
+  
+  const navigate = useNavigate()
+  const [ registerAdmin ] = useRegisterAdminMutation()
 
   // Form submission handler
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     console.log(data);
     // You can send the form data to an API or handle it here
+    const response = await registerAdmin(data);
+    if (response.data) {
+      toast.success("Successfully registered Admin")
+      // Reset the form after successful registration
+      reset();
+      setTimeout(() => {
+        // Navigate to admin login page
+       navigate("/api/auth/admin")
+      }, 300);
+    }
   };
 
   return (

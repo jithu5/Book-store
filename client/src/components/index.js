@@ -7,6 +7,7 @@ import SalesDetails from "./Admin/SalesDetails";
 import AddBooks from "./Admin/AddBooks";
 import BookList from "./Admin/BookList";
 import EditBook from "./Admin/EditBook";
+import Adminprotectedroute from "./Admin/Adminprotectedroute";
 
 
 export {
@@ -18,5 +19,6 @@ export {
     SalesDetails,
     AddBooks,
     BookList,
-    EditBook
+    EditBook,
+    Adminprotectedroute
 }
